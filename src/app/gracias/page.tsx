@@ -1,12 +1,25 @@
-import Link from "next/link";
+/*
+  Ruta de gracias reservada para flujos futuros con redirección real:
+  - campañas pagadas
+  - CRM
+  - páginas externas
+  - eventos de conversión independientes
 
-const BROCHURE_URL = "/brochures/zenstyle-brochure-web.pdf";
+  El flujo actual del HeroCarousel muestra la pantalla de gracias
+  dentro de LeadCaptureModal.tsx, sin cambiar de ruta.
+*/
+
+
+import Link from "next/link";
+import { ASSETS } from "@/config/assets";
+
+const BROCHURE_URL = ASSETS.brochures.zenstyle.web;
 
 export default function GraciasPage() {
   /*
     Punto de extensión futuro:
-    Esta página real de gracias es el lugar adecuado para disparar
-    eventos de conversión después de un lead exitoso.
+    Esta página real de gracias funciona como continuación del flujo iniciado
+    en el modal de captación.
 
     Aquí podrá crecer la lógica para:
     1. Meta Pixel.
@@ -20,44 +33,54 @@ export default function GraciasPage() {
   */
 
   return (
-    <main className="min-h-screen bg-neutral-950 px-6 py-10 text-white sm:px-8 lg:px-12">
-      <section className="mx-auto flex min-h-[calc(100vh-80px)] max-w-4xl flex-col items-center justify-center text-center">
-        <p className="mb-5 text-[10px] font-light uppercase tracking-[0.32em] text-white/60 sm:text-xs sm:tracking-[0.4em]">
-          ZenStyle Premium Floors
-        </p>
+    <main className="min-h-screen bg-neutral-950 px-4 py-6 text-white sm:px-6 lg:px-8">
+      <section className="flex min-h-[calc(100vh-48px)] items-center justify-center">
+        <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/15 bg-neutral-950/95 text-center shadow-2xl">
+          <div className="border-b border-white/10 px-6 py-6 sm:px-8">
+            <p className="mb-3 text-[10px] font-light uppercase tracking-[0.28em] text-white/60">
+              ZenStyle Brochure
+            </p>
 
-        <h1 className="max-w-3xl text-3xl font-light uppercase tracking-[0.16em] sm:text-5xl sm:tracking-[0.18em] md:text-6xl">
-          Gracias por tu interés
-        </h1>
+            <h1 className="text-2xl font-light uppercase tracking-[0.18em] sm:text-3xl">
+              Gracias por tu interés
+            </h1>
+          </div>
 
-        <p className="mt-6 max-w-2xl text-sm font-light leading-relaxed text-white/70 sm:text-base md:text-lg">
-          Hemos recibido tu solicitud. ZenStyle está diseñado para proyectos que
-          buscan superficies premium, estética contemporánea y alto desempeño en
-          interiores residenciales, corporativos y comerciales.
-        </p>
+          <div className="px-6 py-8 sm:px-8">
+            <p className="text-sm font-light leading-relaxed text-white/70 sm:text-base">
+              Hemos recibido tu solicitud. Ahora puedes abrir el brochure de
+              ZenStyle y conocer más sobre nuestras superficies premium para
+              interiores contemporáneos, elegantes y de alto desempeño.
+            </p>
 
-        <div className="mt-10 flex w-full max-w-md flex-col gap-4 sm:flex-row sm:justify-center">
-          <a
-            href={BROCHURE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-[5px] border border-white bg-white px-6 py-4 text-center text-xs font-light uppercase tracking-[0.18em] text-neutral-950 transition-all duration-300 hover:scale-[1.02] hover:bg-transparent hover:text-white"
-          >
-            Abrir brochure
-          </a>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <a
+                href={BROCHURE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-[5px] border border-white bg-white px-6 py-4 text-center text-xs font-light uppercase tracking-[0.18em] text-neutral-950 transition-all duration-300 hover:scale-[1.02] hover:bg-transparent hover:text-white"
+              >
+                Abrir brochure
+              </a>
 
-          <Link
-            href="/"
-            className="rounded-[5px] border border-white/30 bg-white/5 px-6 py-4 text-center text-xs font-light uppercase tracking-[0.18em] text-white transition-all duration-300 hover:border-white hover:bg-white hover:text-neutral-950"
-          >
-            Volver al inicio
-          </Link>
+              <Link
+                href="/"
+                className="rounded-[5px] border border-white/20 px-6 py-4 text-center text-xs font-light uppercase tracking-[0.18em] text-white/70 transition-all duration-300 hover:border-white hover:bg-white hover:text-neutral-950"
+              >
+                Volver a la landing
+              </Link>
+            </div>
+
+            <p className="mt-6 text-xs font-light leading-relaxed text-white/40">
+              Si el brochure no abre correctamente, verifica que el archivo
+              exista en{" "}
+              <span className="text-white/60">
+                public/brochures/zenstyle-brochure-web.pdf
+              </span>
+              .
+            </p>
+          </div>
         </div>
-
-        <p className="mt-8 max-w-xl text-xs font-light leading-relaxed text-white/40">
-          Si el brochure no abre correctamente, verifica que el archivo exista
-          en <span className="text-white/60">public/brochures/zenstyle-brochure.pdf</span>.
-        </p>
       </section>
     </main>
   );
