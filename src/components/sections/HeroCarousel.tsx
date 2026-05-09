@@ -5,10 +5,10 @@ import Image from "next/image";
 import LeadCaptureModal from "@/components/modals/LeadCaptureModal";
 
 const IMAGES = [
-  "/images/hero/piso1.jpg",
-  "/images/hero/piso2.jpg",
-  "/images/hero/piso3.jpg",
-  "/images/hero/piso4.jpg",
+  "/images/hero/piso1.avif",
+  "/images/hero/piso2.avif",
+  "/images/hero/piso3.avif",
+  "/images/hero/piso4.avif",
   "/images/hero/piso5.jpg",
 ];
 
