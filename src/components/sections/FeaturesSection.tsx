@@ -1,12 +1,23 @@
 import Image from "next/image";
-import type { ComponentType } from "react";
 
-import { DurabilityIcon } from "@/components/icons/features/DurabilityIcon";
-import { EasyCleanIcon } from "@/components/icons/features/EasyCleanIcon";
-import { HomeCommercialIcon } from "@/components/icons/features/HomeCommercialIcon";
-import { InstallationIcon } from "@/components/icons/features/InstallationIcon";
-import { WaterResistantIcon } from "@/components/icons/features/WaterResistantIcon";
-import { WoodPremiumIcon } from "@/components/icons/features/WoodPremiumIcon";
+/**
+ * FeaturesSection
+ * -----------------------------------------------------------------------------
+ * Nombre técnico del componente: FeaturesSection
+ * Nombre comercial visible: Beneficios SPC
+ *
+ * Objetivo:
+ * Comunicar los beneficios principales de los pisos SPC de Zen Style mediante
+ * una composición editorial premium: imagen showroom + panel curvo + cards.
+ *
+ * Notas de mantenimiento:
+ * - La sección es autónoma y no depende de HeroCarousel.
+ * - Las cards NO son interactivas. Evitar cursor-pointer, chevrons o hover states.
+ * - El CTA sí puede conectarse después a modal, formulario o ancla.
+ * - Las imágenes de fondo viven en /public/images/features/.
+ * - Los íconos ahora son PNG transparentes y viven en /public/icons/features/.
+ * - La tipografía debe venir desde variables/globales del proyecto, no desde aquí.
+ */
 
 type FeatureTone = "dark" | "light" | "taupe";
 
@@ -14,7 +25,13 @@ type Feature = {
   title: string;
   description: string;
   tone: FeatureTone;
-  icon: ComponentType<{ className?: string }>;
+
+  /**
+   * Ruta pública del ícono PNG.
+   * Al estar dentro de /public, se referencia desde la raíz:
+   * /icons/features/nombre-del-icono.png
+   */
+  icon: string;
 };
 
 const features: Feature[] = [
@@ -23,76 +40,87 @@ const features: Feature[] = [
     description:
       "La calidez visual de la madera con acabados modernos, elegantes y fáciles de integrar a distintos estilos de interiorismo.",
     tone: "dark",
-    icon: WoodPremiumIcon,
+    icon: "/icons/features/icon-wood-premium.png",
   },
   {
     title: "Resistencia al agua",
     description:
       "Ideal para espacios donde la vida sucede: cocina, comedor, sala, oficinas o áreas de alto tránsito.",
     tone: "light",
-    icon: WaterResistantIcon,
+    icon: "/icons/features/icon-water-resistant.png",
   },
   {
     title: "Durabilidad para uso diario",
     description:
       "Preparado para acompañar la actividad cotidiana sin perder presencia, estilo ni funcionalidad.",
     tone: "taupe",
-    icon: DurabilityIcon,
+    icon: "/icons/features/icon-durability.png",
   },
   {
     title: "Fácil mantenimiento",
     description:
       "Limpieza práctica, menor esfuerzo y una apariencia cuidada por más tiempo.",
     tone: "light",
-    icon: EasyCleanIcon,
+    icon: "/icons/features/icon-easy-clean.png",
   },
   {
     title: "Instalación práctica",
     description:
       "Una forma eficiente de renovar tus espacios con menor complejidad frente a otros materiales.",
     tone: "light",
-    icon: InstallationIcon,
+    icon: "/icons/features/icon-easy-installation.png",
   },
   {
     title: "Para hogar y comercio",
     description:
       "Una solución versátil para residencias, oficinas, showrooms, locales y proyectos de interiorismo.",
     tone: "taupe",
-    icon: HomeCommercialIcon,
+    icon: "/icons/features/icon-home-commercial.png",
   },
 ];
 
+/**
+ * toneStyles
+ * -----------------------------------------------------------------------------
+ * Controla la apariencia visual de cada card según su tono.
+ *
+ * card:
+ *   Fondo, borde, color de texto y sombra de la tarjeta.
+ *
+ * badge:
+ *   Contenedor circular del ícono. Aunque el ícono sea PNG, la profundidad,
+ *   sombra y ring se controlan aquí.
+ *
+ * description:
+ *   Color del copy descriptivo.
+ *
+ * Nota:
+ * Ya no existe styles.icon porque el color del ícono viene integrado en el PNG.
+ */
 const toneStyles: Record<
   FeatureTone,
   {
     card: string;
     badge: string;
-    icon: string;
     description: string;
   }
 > = {
   dark: {
-    card:
-      "border-[#7B5339]/35 bg-[#684128] text-[#FFF7EC] shadow-[0_22px_45px_rgba(62,38,24,0.28)]",
+    card: "border-[#7B5339]/35 bg-[#684128] text-[#FFF7EC] shadow-[0_22px_45px_rgba(62,38,24,0.28)]",
     badge:
-      "bg-[#8A654B] text-[#F8E6CF] shadow-[0_14px_28px_rgba(31,20,14,0.28)] ring-1 ring-[#F8E6CF]/22",
-    icon: "text-[#F8E6CF]",
+      "bg-[#8A654B] shadow-[0_14px_28px_rgba(31,20,14,0.28)] ring-1 ring-[#F8E6CF]/22",
     description: "text-[#FFF7EC]/78",
   },
   light: {
-    card:
-      "border-[#D0B79D]/65 bg-[#FFF8EF] text-[#2E2118] shadow-[0_18px_38px_rgba(87,62,42,0.14)]",
+    card: "border-[#D0B79D]/65 bg-[#FFF8EF] text-[#2E2118] shadow-[0_18px_38px_rgba(87,62,42,0.14)]",
     badge:
-      "bg-[#E9D9C4] text-[#70492E] shadow-[0_13px_26px_rgba(87,62,42,0.20)] ring-1 ring-white/55",
-    icon: "text-[#70492E]",
+      "bg-[#E9D9C4] shadow-[0_13px_26px_rgba(87,62,42,0.20)] ring-1 ring-white/55",
     description: "text-[#6A584A]",
   },
   taupe: {
-    card:
-      "border-[#B99D80]/60 bg-[#D4BDA4] text-[#2F2118] shadow-[0_20px_42px_rgba(87,62,42,0.19)]",
+    card: "border-[#B99D80]/60 bg-[#D4BDA4] text-[#2F2118] shadow-[0_20px_42px_rgba(87,62,42,0.19)]",
     badge:
-      "bg-[#8F755C] text-[#FFF3E4] shadow-[0_14px_30px_rgba(49,32,22,0.26)] ring-1 ring-white/28",
-    icon: "text-[#FFF3E4]",
+      "bg-[#8F755C] shadow-[0_14px_30px_rgba(49,32,22,0.26)] ring-1 ring-white/28",
     description: "text-[#4E3D31]",
   },
 };
@@ -103,8 +131,17 @@ export default function FeaturesSection() {
       id="beneficios"
       className="relative overflow-hidden bg-white text-[#2E2118]"
     >
-      <div className="relative overflow-hidden bg-[#201711] py-5 lg:min-h-screen  lg:pl-4">
-        {/* Imagen mobile / tablet vertical */}
+      {/*
+        Contenedor general de la sección.
+        py controla el aire exterior de la sección respecto a secciones vecinas.
+        Ajustar aquí si la sección se siente demasiado encimada.
+      */}
+      <div className="relative overflow-hidden bg-[#201711] py-10 lg:pl-5 lg:min-h-screen">
+        {/*
+          Imagen mobile / tablet vertical.
+          Se muestra hasta antes de lg.
+          El contenido/panel se coloca debajo con curva superior.
+        */}
         <div className="relative h-[390px] w-full md:h-[520px] lg:hidden">
           <Image
             src="/images/features/features-showroom-mobile.webp"
@@ -114,10 +151,16 @@ export default function FeaturesSection() {
             sizes="100vw"
             className="object-cover object-center"
           />
+
+          {/* Overlay para integrar visualmente imagen con panel crema */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
         </div>
 
-        {/* Imagen desktop / tablet horizontal */}
+        {/*
+          Imagen desktop / tablet horizontal.
+          Vive al fondo, lado derecho.
+          El panel curvo se monta por encima desde la izquierda.
+        */}
         <div className="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
           <Image
             src="/images/features/features-showroom-desktop.webp"
@@ -127,10 +170,17 @@ export default function FeaturesSection() {
             sizes="56vw"
             className="object-cover object-center"
           />
+
+          {/* Overlay sutil para mejorar integración con el panel */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#201711]/15 via-transparent to-black/5" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
+          {/*
+            Panel principal curvo.
+            before y after crean los biseles/líneas interiores que dan sensación
+            de placa editorial y profundidad, similar al mockup aprobado.
+          */}
           <div
             className="
               relative
@@ -194,6 +244,10 @@ export default function FeaturesSection() {
               2xl:px-18
             "
           >
+            {/*
+              z-10 mantiene el contenido por encima de los pseudo-elementos
+              before/after del panel.
+            */}
             <div className="relative z-10 mx-auto w-full max-w-3xl lg:mx-0 lg:max-w-none">
               <header className="mb-8 md:mb-10 lg:mb-9">
                 <div className="mb-4 flex items-center gap-4">
@@ -213,6 +267,12 @@ export default function FeaturesSection() {
                 </p>
               </header>
 
+              {/*
+                Grid de beneficios.
+                Mobile: 1 columna.
+                Tablet en adelante: 2 columnas.
+                Las cards no son interactivas.
+              */}
               <div className="grid gap-4 md:grid-cols-2 md:gap-5 lg:gap-5 xl:gap-6">
                 {features.map((feature) => (
                   <FeatureCard key={feature.title} feature={feature} />
@@ -225,6 +285,14 @@ export default function FeaturesSection() {
                   funcionalidad y confianza.
                 </p>
 
+                {/*
+                  CTA real de la sección.
+                  Puede conectarse después a:
+                  - LeadCaptureModal
+                  - formulario
+                  - sección #contacto
+                  - acción de WhatsApp
+                */}
                 <a
                   href="#contacto"
                   className="
@@ -266,7 +334,6 @@ export default function FeaturesSection() {
 }
 
 function FeatureCard({ feature }: { feature: Feature }) {
-  const Icon = feature.icon;
   const styles = toneStyles[feature.tone];
 
   return (
@@ -287,6 +354,10 @@ function FeatureCard({ feature }: { feature: Feature }) {
       `}
       aria-label={feature.title}
     >
+      {/*
+        Bisel interno de la card.
+        Aporta profundidad sin hacer que la card parezca clickeable.
+      */}
       <div
         className="
           pointer-events-none
@@ -299,6 +370,10 @@ function FeatureCard({ feature }: { feature: Feature }) {
         aria-hidden="true"
       />
 
+      {/*
+        Highlight superior.
+        Simula una línea de luz sobre la tarjeta.
+      */}
       <div
         className="
           pointer-events-none
@@ -315,22 +390,33 @@ function FeatureCard({ feature }: { feature: Feature }) {
       />
 
       <div className="relative z-10 flex gap-4 md:gap-5">
+        {/*
+          Medallón del ícono.
+          El PNG es decorativo; por eso el contenedor es aria-hidden
+          y el Image usa alt vacío.
+        */}
         <div
           className={`
             flex
-            h-13
-            w-13
+            h-[52px]
+            w-[52px]
             shrink-0
             items-center
             justify-center
             rounded-full
-            md:h-15
-            md:w-15
+            md:h-[60px]
+            md:w-[60px]
             ${styles.badge}
           `}
           aria-hidden="true"
         >
-          <Icon className={`h-7 w-7 md:h-8 md:w-8 ${styles.icon}`} />
+          <Image
+            src={feature.icon}
+            alt=""
+            width={48}
+            height={48}
+            className="h-[40px] w-[40px] object-contain md:h-[46px] md:w-[46px]"
+          />
         </div>
 
         <div className="min-w-0">

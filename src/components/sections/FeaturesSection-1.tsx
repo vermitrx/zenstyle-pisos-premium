@@ -1,10 +1,12 @@
 import Image from "next/image";
-import { WoodPremiumIcon } from "@/components/icons/features/WoodPremiumIcon";
-import { WaterResistantIcon } from "@/components/icons/features/WaterResistantIcon";
+import type { ComponentType } from "react";
+
 import { DurabilityIcon } from "@/components/icons/features/DurabilityIcon";
 import { EasyCleanIcon } from "@/components/icons/features/EasyCleanIcon";
-import { InstallationIcon } from "@/components/icons/features/InstallationIcon";
 import { HomeCommercialIcon } from "@/components/icons/features/HomeCommercialIcon";
+import { InstallationIcon } from "@/components/icons/features/InstallationIcon";
+import { WaterResistantIcon } from "@/components/icons/features/WaterResistantIcon";
+import { WoodPremiumIcon } from "@/components/icons/features/WoodPremiumIcon";
 
 type FeatureTone = "dark" | "light" | "taupe";
 
@@ -12,7 +14,7 @@ type Feature = {
   title: string;
   description: string;
   tone: FeatureTone;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
 };
 
 const features: Feature[] = [
@@ -41,7 +43,7 @@ const features: Feature[] = [
     title: "Fácil mantenimiento",
     description:
       "Limpieza práctica, menor esfuerzo y una apariencia cuidada por más tiempo.",
-    tone: "dark",
+    tone: "light",
     icon: EasyCleanIcon,
   },
   {
@@ -66,22 +68,32 @@ const toneStyles: Record<
     card: string;
     badge: string;
     icon: string;
+    description: string;
   }
 > = {
   dark: {
-    card: "border-[#5A3924]/25 bg-[#5A3924] text-[#F8F1E8] shadow-[0_18px_45px_rgba(42,25,14,0.22)]",
-    badge: "bg-[#F8F1E8]/12 text-[#F4DFC6]",
-    icon: "text-[#F4DFC6]",
+    card:
+      "border-[#7B5339]/35 bg-[#684128] text-[#FFF7EC] shadow-[0_22px_45px_rgba(62,38,24,0.28)]",
+    badge:
+      "bg-[#8A654B] text-[#F8E6CF] shadow-[0_14px_28px_rgba(31,20,14,0.28)] ring-1 ring-[#F8E6CF]/22",
+    icon: "text-[#F8E6CF]",
+    description: "text-[#FFF7EC]/78",
   },
   light: {
-    card: "border-[#CBB79F]/45 bg-[#FFF9F1] text-[#2E2118] shadow-[0_16px_35px_rgba(78,54,35,0.12)]",
-    badge: "bg-[#EADCCB] text-[#6B442A]",
-    icon: "text-[#6B442A]",
+    card:
+      "border-[#D0B79D]/65 bg-[#FFF8EF] text-[#2E2118] shadow-[0_18px_38px_rgba(87,62,42,0.14)]",
+    badge:
+      "bg-[#E9D9C4] text-[#70492E] shadow-[0_13px_26px_rgba(87,62,42,0.20)] ring-1 ring-white/55",
+    icon: "text-[#70492E]",
+    description: "text-[#6A584A]",
   },
   taupe: {
-    card: "border-[#B99D80]/40 bg-[#D8C2AA] text-[#2F2118] shadow-[0_16px_35px_rgba(78,54,35,0.16)]",
-    badge: "bg-[#4B3222] text-[#F4DFC6]",
-    icon: "text-[#F4DFC6]",
+    card:
+      "border-[#B99D80]/60 bg-[#D4BDA4] text-[#2F2118] shadow-[0_20px_42px_rgba(87,62,42,0.19)]",
+    badge:
+      "bg-[#8F755C] text-[#FFF3E4] shadow-[0_14px_30px_rgba(49,32,22,0.26)] ring-1 ring-white/28",
+    icon: "text-[#FFF3E4]",
+    description: "text-[#4E3D31]",
   },
 };
 
@@ -89,76 +101,162 @@ export default function FeaturesSection() {
   return (
     <section
       id="beneficios"
-      className="relative overflow-hidden bg-[#1F1712] py-10 text-[#2E2118] md:py-14 lg:min-h-screen lg:py-0"
+      className="relative overflow-hidden bg-white text-[#2E2118]"
     >
-      {/* Imagen mobile / tablet vertical */}
-      <div className="relative h-[420px] w-full md:h-[520px] lg:hidden">
-        <Image
-          src="/images/features/features-showroom-mobile.webp"
-          alt="Estancia premium con piso SPC Zen Style"
-          fill
-          priority={false}
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/5 to-[#F4E7D8]" />
-      </div>
+      <div className="relative overflow-hidden bg-[#201711] py-5 lg:min-h-screen  lg:pl-4">
+        {/* Imagen mobile / tablet vertical */}
+        <div className="relative h-[390px] w-full md:h-[520px] lg:hidden">
+          <Image
+            src="/images/features/features-showroom-mobile.webp"
+            alt="Estancia premium con piso SPC Zen Style"
+            fill
+            priority={false}
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
+        </div>
 
-      {/* Imagen desktop / tablet horizontal */}
-      <div className="absolute inset-y-0 right-0 hidden w-[58%] lg:block">
-        <Image
-          src="/images/features/features-showroom-desktop.webp"
-          alt="Showroom Zen Style con piso SPC instalado"
-          fill
-          priority={false}
-          sizes="58vw"
-          className="object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-l from-black/10 via-black/0 to-[#1F1712]/20" />
-      </div>
+        {/* Imagen desktop / tablet horizontal */}
+        <div className="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
+          <Image
+            src="/images/features/features-showroom-desktop.webp"
+            alt="Showroom Zen Style con piso SPC instalado"
+            fill
+            priority={false}
+            sizes="56vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#201711]/15 via-transparent to-black/5" />
+        </div>
 
-      <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
-        <div className="relative -mt-16 rounded-t-[3rem] bg-[#F4E7D8] px-5 pb-10 pt-10 shadow-[0_-28px_60px_rgba(28,18,12,0.22)] md:-mt-24 md:mx-8 md:rounded-t-[4rem] md:px-10 md:pb-14 md:pt-12 lg:mx-0 lg:mt-0 lg:flex lg:min-h-screen lg:w-[58%] lg:items-center lg:rounded-none lg:rounded-r-[5rem] lg:px-12 lg:py-16 xl:px-16">
-          <div className="mx-auto w-full max-w-3xl lg:max-w-none">
-            <div className="mb-8 md:mb-10">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-xs font-semibold uppercase tracking-[0.32em] text-[#7A5638]">
-                  Beneficios SPC
-                </span>
-                <span className="h-px w-12 bg-[#B99D80]" />
+        <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
+          <div
+            className="
+              relative
+              -mt-14
+              overflow-hidden
+              rounded-t-[3rem]
+              border border-[#F8ECDD]/80
+              bg-[#F4E6D7]
+              px-5
+              pb-10
+              pt-10
+              shadow-[0_-28px_70px_rgba(38,25,17,0.28)]
+              before:pointer-events-none
+              before:absolute
+              before:inset-[8px]
+              before:rounded-t-[2.55rem]
+              before:border
+              before:border-white/55
+              before:content-['']
+              after:pointer-events-none
+              after:absolute
+              after:inset-[15px]
+              after:rounded-t-[2.15rem]
+              after:border
+              after:border-[#B99D80]/26
+              after:content-['']
+              md:-mt-24
+              md:mx-7
+              md:rounded-t-[4.25rem]
+              md:px-10
+              md:pb-14
+              md:pt-12
+              md:before:inset-[10px]
+              md:before:rounded-t-[3.55rem]
+              md:after:inset-[18px]
+              md:after:rounded-t-[3.05rem]
+              lg:mx-0
+              lg:mt-0
+              lg:flex
+              lg:min-h-screen
+              lg:w-[63%]
+              lg:items-center
+              lg:rounded-none
+              lg:rounded-r-[7rem]
+              lg:border-y-0
+              lg:border-l-0
+              lg:border-r
+              lg:px-14
+              lg:py-16
+              lg:shadow-[34px_0_80px_rgba(38,25,17,0.34)]
+              lg:before:inset-[12px]
+              lg:before:rounded-none
+              lg:before:rounded-r-[6.2rem]
+              lg:before:border-[#FFF7EC]/70
+              lg:after:inset-[24px]
+              lg:after:rounded-none
+              lg:after:rounded-r-[5.15rem]
+              lg:after:border-[#B99D80]/32
+              xl:w-[61%]
+              xl:px-16
+              2xl:px-18
+            "
+          >
+            <div className="relative z-10 mx-auto w-full max-w-3xl lg:mx-0 lg:max-w-none">
+              <header className="mb-8 md:mb-10 lg:mb-9">
+                <div className="mb-4 flex items-center gap-4">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.36em] text-[#7A5638] md:text-xs">
+                    Beneficios SPC
+                  </span>
+                  <span className="h-px w-12 bg-[#B99D80]" />
+                </div>
+
+                <h2 className="max-w-2xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-[#2E2118] md:text-5xl lg:text-[4.4rem] lg:leading-[0.96] xl:text-[4.85rem]">
+                  Diseño premium para la vida real
+                </h2>
+
+                <p className="mt-5 max-w-xl text-base leading-7 text-[#6A584A] md:text-lg lg:mt-6 lg:max-w-2xl">
+                  La apariencia cálida de la madera, con la resistencia y
+                  practicidad que exigen los espacios modernos.
+                </p>
+              </header>
+
+              <div className="grid gap-4 md:grid-cols-2 md:gap-5 lg:gap-5 xl:gap-6">
+                {features.map((feature) => (
+                  <FeatureCard key={feature.title} feature={feature} />
+                ))}
               </div>
 
-              <h2 className="max-w-2xl text-4xl font-semibold leading-[1.03] tracking-[-0.04em] text-[#2E2118] md:text-5xl lg:text-6xl">
-                Diseño premium para la vida real
-              </h2>
+              <footer className="mt-8 border-t border-[#B99D80]/55 pt-6 md:mt-10 md:flex md:items-center md:justify-between md:gap-8 lg:mt-9">
+                <p className="max-w-md text-sm leading-6 text-[#5F4C3D] md:text-base">
+                  Una solución pensada para quienes buscan renovar con estilo,
+                  funcionalidad y confianza.
+                </p>
 
-              <p className="mt-5 max-w-xl text-base leading-7 text-[#6A584A] md:text-lg">
-                La apariencia cálida de la madera, con la resistencia y
-                practicidad que exigen los espacios modernos.
-              </p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 md:gap-5">
-              {features.map((feature) => (
-                <FeatureCard key={feature.title} feature={feature} />
-              ))}
-            </div>
-
-            <div className="mt-8 border-t border-[#CBB79F]/70 pt-6 md:mt-10 md:flex md:items-center md:justify-between md:gap-8">
-              <p className="max-w-md text-sm leading-6 text-[#6A584A] md:text-base">
-                Una solución pensada para quienes buscan renovar con estilo,
-                funcionalidad y confianza.
-              </p>
-
-              <a
-                href="#contacto"
-                className="mt-6 inline-flex w-full items-center justify-center rounded-full border border-[#C49A6C]/70 bg-[#3A261A] px-7 py-4 text-sm font-semibold tracking-wide text-[#F8F1E8] shadow-[0_18px_40px_rgba(58,38,26,0.28)] transition-colors duration-300 hover:bg-[#2B1B12] md:mt-0 md:w-auto"
-              >
-                Cotizar mi proyecto
-                <span className="ml-2" aria-hidden="true">
-                  →
-                </span>
-              </a>
+                <a
+                  href="#contacto"
+                  className="
+                    mt-6
+                    inline-flex
+                    w-full
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-[#C49A6C]/75
+                    bg-[#3A261A]
+                    px-7
+                    py-4
+                    text-sm
+                    font-semibold
+                    tracking-wide
+                    text-[#F8F1E8]
+                    shadow-[0_18px_42px_rgba(58,38,26,0.32)]
+                    transition-colors
+                    duration-300
+                    hover:bg-[#2B1B12]
+                    md:mt-0
+                    md:w-auto
+                  "
+                >
+                  Cotizar mi proyecto
+                  <span className="ml-2" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+              </footer>
             </div>
           </div>
         </div>
@@ -173,28 +271,74 @@ function FeatureCard({ feature }: { feature: Feature }) {
 
   return (
     <article
-      className={`rounded-3xl border p-4 md:p-5 ${styles.card}`}
+      className={`
+        relative
+        min-h-[132px]
+        overflow-hidden
+        rounded-[1.35rem]
+        border
+        p-4
+        transition-none
+        md:min-h-[154px]
+        md:p-5
+        lg:min-h-[158px]
+        xl:min-h-[166px]
+        ${styles.card}
+      `}
       aria-label={feature.title}
     >
-      <div className="flex gap-4">
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-[1px]
+          rounded-[1.28rem]
+          border
+          border-white/35
+        "
+        aria-hidden="true"
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-x-5
+          top-0
+          h-px
+          bg-gradient-to-r
+          from-transparent
+          via-white/50
+          to-transparent
+        "
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 flex gap-4 md:gap-5">
         <div
-        //  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-black shadow-[8px_3px_10px_rgba(31,35,40,0.38)] ring-1 ring-[#C8A45D]/55 md:h-14 md:w-14"
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#4F4032] shadow-[0_10px_22px_rgba(31,35,40,0.38)] ring-2 ring-white/25 md:h-14 md:w-14 ${styles.badge}`}
+          className={`
+            flex
+            h-13
+            w-13
+            shrink-0
+            items-center
+            justify-center
+            rounded-full
+            md:h-15
+            md:w-15
+            ${styles.badge}
+          `}
           aria-hidden="true"
         >
-          <Icon className="h-7 w-7 text-[#C8A45D] md:h-8 md:w-8" />
+          <Icon className={`h-7 w-7 md:h-8 md:w-8 ${styles.icon}`} />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <h3 className="text-base font-semibold leading-snug tracking-[-0.02em] md:text-lg">
             {feature.title}
           </h3>
 
-          <p
-            className={`mt-2 text-sm leading-6 ${
-              feature.tone === "dark" ? "text-[#F8F1E8]/78" : "text-[#6A584A]"
-            }`}
-          >
+          <p className={`mt-2 text-sm leading-6 ${styles.description}`}>
             {feature.description}
           </p>
         </div>
