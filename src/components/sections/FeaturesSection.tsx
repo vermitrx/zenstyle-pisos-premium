@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 /**
  * FeaturesSection
@@ -10,12 +13,17 @@ import Image from "next/image";
  * Comunicar los beneficios principales de los pisos SPC de Zen Style mediante
  * una composición editorial premium: imagen showroom + panel curvo + cards.
  *
+ * Lógica interactiva:
+ * - Las cards funcionan como flip cards.
+ * - Solo una card puede estar activa a la vez.
+ * - Click/tap en una card cerrada: se voltea.
+ * - Click/tap en la card activa: regresa al frente.
+ * - Al activar otra card, la anterior se cierra automáticamente.
+ *
  * Notas de mantenimiento:
- * - La sección es autónoma y no depende de HeroCarousel.
- * - Las cards NO son interactivas. Evitar cursor-pointer, chevrons o hover states.
- * - El CTA sí puede conectarse después a modal, formulario o ancla.
- * - Las imágenes de fondo viven en /public/images/features/.
- * - Los íconos ahora son PNG transparentes y viven en /public/icons/features/.
+ * - Esta sección ahora es Client Component porque usa useState.
+ * - La sección sigue siendo autónoma y no depende de HeroCarousel.
+ * - Los íconos son PNG transparentes y viven en /public/icons/features/.
  * - La tipografía debe venir desde variables/globales del proyecto, no desde aquí.
  */
 
@@ -25,25 +33,19 @@ type Feature = {
   title: string;
   description: string;
   tone: FeatureTone;
-
-  /**
-   * Ruta pública del ícono PNG.
-   * Al estar dentro de /public, se referencia desde la raíz:
-   * /icons/features/nombre-del-icono.png
-   */
   icon: string;
 };
 
 const features: Feature[] = [
   {
-    title: "Apariencia tipo madera premium",
+    title: "Apariencia tipo madera" /* premium */,
     description:
       "La calidez visual de la madera con acabados modernos, elegantes y fáciles de integrar a distintos estilos de interiorismo.",
     tone: "dark",
     icon: "/icons/features/icon-wood-premium.png",
   },
   {
-    title: "Resistencia al agua",
+    title: "Resistente al agua",
     description:
       "Ideal para espacios donde la vida sucede: cocina, comedor, sala, oficinas o áreas de alto tránsito.",
     tone: "light",
@@ -64,14 +66,14 @@ const features: Feature[] = [
     icon: "/icons/features/icon-easy-clean.png",
   },
   {
-    title: "Instalación práctica",
+    title: "Fácil instalación",
     description:
       "Una forma eficiente de renovar tus espacios con menor complejidad frente a otros materiales.",
     tone: "light",
     icon: "/icons/features/icon-easy-installation.png",
   },
   {
-    title: "Para hogar y comercio",
+    title: "Para hogar, oficinas y comercio",
     description:
       "Una solución versátil para residencias, oficinas, showrooms, locales y proyectos de interiorismo.",
     tone: "taupe",
@@ -82,67 +84,77 @@ const features: Feature[] = [
 /**
  * toneStyles
  * -----------------------------------------------------------------------------
- * Controla la apariencia visual de cada card según su tono.
- *
  * card:
- *   Fondo, borde, color de texto y sombra de la tarjeta.
+ *   Estilo base de la tarjeta.
  *
  * badge:
- *   Contenedor circular del ícono. Aunque el ícono sea PNG, la profundidad,
- *   sombra y ring se controlan aquí.
+ *   Contenedor circular del ícono.
  *
  * description:
- *   Color del copy descriptivo.
+ *   Color del texto descriptivo en el reverso.
  *
- * Nota:
- * Ya no existe styles.icon porque el color del ícono viene integrado en el PNG.
+ * back:
+ *   Fondo del reverso. Lo dejamos controlado por tono para mantener contraste.
  */
 const toneStyles: Record<
   FeatureTone,
   {
     card: string;
     badge: string;
+    title: string;
     description: string;
+    back: string;
+    hint: string;
   }
 > = {
   dark: {
     card: "border-[#7B5339]/35 bg-[#684128] text-[#FFF7EC] shadow-[0_22px_45px_rgba(62,38,24,0.28)]",
     badge:
-      "bg-[#8A654B] shadow-[0_14px_28px_rgba(31,20,14,0.28)] ring-1 ring-[#F8E6CF]/22",
-    description: "text-[#FFF7EC]/78",
+      "bg-[#8A654B] shadow-[0_14px_28px_rgba(31,20,14,0.28)] ring-1 ring-[#F8E6CF]/25",
+    title: "text-[#FFF7EC]",
+    description: "text-[#FFF7EC]/82",
+    back: "bg-[#684128]",
+    hint: "text-[#F8E6CF]/75",
   },
   light: {
     card: "border-[#D0B79D]/65 bg-[#FFF8EF] text-[#2E2118] shadow-[0_18px_38px_rgba(87,62,42,0.14)]",
     badge:
-      "bg-[#E9D9C4] shadow-[0_13px_26px_rgba(87,62,42,0.20)] ring-1 ring-white/55",
+      "bg-[#E9D9C4] shadow-[0_13px_26px_rgba(87,62,42,0.20)] ring-1 ring-white/60",
+    title: "text-[#2E2118]",
     description: "text-[#6A584A]",
+    back: "bg-[#FFF8EF]",
+    hint: "text-[#7A5638]/75",
   },
   taupe: {
     card: "border-[#B99D80]/60 bg-[#D4BDA4] text-[#2F2118] shadow-[0_20px_42px_rgba(87,62,42,0.19)]",
     badge:
-      "bg-[#8F755C] shadow-[0_14px_30px_rgba(49,32,22,0.26)] ring-1 ring-white/28",
+      "bg-[#8F755C] shadow-[0_14px_30px_rgba(49,32,22,0.26)] ring-1 ring-white/30",
+    title: "text-[#2F2118]",
     description: "text-[#4E3D31]",
+    back: "bg-[#D4BDA4]",
+    hint: "text-[#5A3924]/75",
   },
 };
 
 export default function FeaturesSection() {
+  const [activeFeatureIndex, setActiveFeatureIndex] = useState<number | null>(
+    null,
+  );
+
+  function handleFeatureToggle(index: number) {
+    setActiveFeatureIndex((currentIndex) =>
+      currentIndex === index ? null : index,
+    );
+  }
+
   return (
     <section
       id="beneficios"
       className="relative overflow-hidden bg-white text-[#2E2118]"
     >
-      {/*
-        Contenedor general de la sección.
-        py controla el aire exterior de la sección respecto a secciones vecinas.
-        Ajustar aquí si la sección se siente demasiado encimada.
-      */}
-      <div className="relative overflow-hidden bg-[#201711] py-10 lg:pl-5 lg:min-h-screen">
-        {/*
-          Imagen mobile / tablet vertical.
-          Se muestra hasta antes de lg.
-          El contenido/panel se coloca debajo con curva superior.
-        */}
-        <div className="relative h-[390px] w-full md:h-[520px] lg:hidden">
+      <div className="relative overflow-hidden bg-[#201711] py-10 lg:min-h-screen lg:pl-5">
+        {/* Imagen mobile / tablet vertical */}
+        <div className="relative h-96 w-full md:h-[32rem] lg:hidden">
           <Image
             src="/images/features/features-showroom-mobile.webp"
             alt="Estancia premium con piso SPC Zen Style"
@@ -152,15 +164,10 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          {/* Overlay para integrar visualmente imagen con panel crema */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
         </div>
 
-        {/*
-          Imagen desktop / tablet horizontal.
-          Vive al fondo, lado derecho.
-          El panel curvo se monta por encima desde la izquierda.
-        */}
+        {/* Imagen desktop / tablet horizontal */}
         <div className="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
           <Image
             src="/images/features/features-showroom-desktop.webp"
@@ -171,16 +178,10 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          {/* Overlay sutil para mejorar integración con el panel */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#201711]/15 via-transparent to-black/5" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
-          {/*
-            Panel principal curvo.
-            before y after crean los biseles/líneas interiores que dan sensación
-            de placa editorial y profundidad, similar al mockup aprobado.
-          */}
           <div
             className="
               relative
@@ -195,14 +196,14 @@ export default function FeaturesSection() {
               shadow-[0_-28px_70px_rgba(38,25,17,0.28)]
               before:pointer-events-none
               before:absolute
-              before:inset-[8px]
+              before:inset-2
               before:rounded-t-[2.55rem]
               before:border
               before:border-white/55
               before:content-['']
               after:pointer-events-none
               after:absolute
-              after:inset-[15px]
+              after:inset-4
               after:rounded-t-[2.15rem]
               after:border
               after:border-[#B99D80]/26
@@ -213,9 +214,9 @@ export default function FeaturesSection() {
               md:px-10
               md:pb-14
               md:pt-12
-              md:before:inset-[10px]
+              md:before:inset-2.5
               md:before:rounded-t-[3.55rem]
-              md:after:inset-[18px]
+              md:after:inset-4
               md:after:rounded-t-[3.05rem]
               lg:mx-0
               lg:mt-0
@@ -231,27 +232,22 @@ export default function FeaturesSection() {
               lg:px-14
               lg:py-16
               lg:shadow-[34px_0_80px_rgba(38,25,17,0.34)]
-              lg:before:inset-[12px]
+              lg:before:inset-3
               lg:before:rounded-none
               lg:before:rounded-r-[6.2rem]
               lg:before:border-[#FFF7EC]/70
-              lg:after:inset-[24px]
+              lg:after:inset-6
               lg:after:rounded-none
               lg:after:rounded-r-[5.15rem]
               lg:after:border-[#B99D80]/32
               xl:w-[61%]
               xl:px-16
-              2xl:px-18
             "
           >
-            {/*
-              z-10 mantiene el contenido por encima de los pseudo-elementos
-              before/after del panel.
-            */}
             <div className="relative z-10 mx-auto w-full max-w-3xl lg:mx-0 lg:max-w-none">
               <header className="mb-8 md:mb-10 lg:mb-9">
                 <div className="mb-4 flex items-center gap-4">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.36em] text-[#7A5638] md:text-xs">
+                  <span className="text-xs font-semibold uppercase tracking-[0.36em] text-[#7A5638]">
                     Beneficios SPC
                   </span>
                   <span className="h-px w-12 bg-[#B99D80]" />
@@ -269,61 +265,25 @@ export default function FeaturesSection() {
 
               {/*
                 Grid de beneficios.
-                Mobile: 1 columna.
-                Tablet en adelante: 2 columnas.
-                Las cards no son interactivas.
+                Las cards ahora son interactivas.
+                Solo una card puede permanecer volteada a la vez.
               */}
-              <div className="grid gap-4 md:grid-cols-2 md:gap-5 lg:gap-5 xl:gap-6">
-                {features.map((feature) => (
-                  <FeatureCard key={feature.title} feature={feature} />
+              <div className="grid gap-5 md:grid-cols-2 md:gap-6 lg:gap-6 xl:gap-7">
+                {features.map((feature, index) => (
+                  <FeatureCard
+                    key={feature.title}
+                    feature={feature}
+                    isActive={activeFeatureIndex === index}
+                    onToggle={() => handleFeatureToggle(index)}
+                  />
                 ))}
               </div>
 
-              <footer className="mt-8 border-t border-[#B99D80]/55 pt-6 md:mt-10 md:flex md:items-center md:justify-between md:gap-8 lg:mt-9">
-                <p className="max-w-md text-sm leading-6 text-[#5F4C3D] md:text-base">
+              <footer className="mt-5 border-t border-[#B99D80]/55 pt-4 md:mt-6 lg:mt-6">
+                <p className="max-w-none text-sm leading-6 text-[#5F4C3D] md:text-base lg:max-w-4xl">
                   Una solución pensada para quienes buscan renovar con estilo,
                   funcionalidad y confianza.
                 </p>
-
-                {/*
-                  CTA real de la sección.
-                  Puede conectarse después a:
-                  - LeadCaptureModal
-                  - formulario
-                  - sección #contacto
-                  - acción de WhatsApp
-                */}
-                <a
-                  href="#contacto"
-                  className="
-                    mt-6
-                    inline-flex
-                    w-full
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-[#C49A6C]/75
-                    bg-[#3A261A]
-                    px-7
-                    py-4
-                    text-sm
-                    font-semibold
-                    tracking-wide
-                    text-[#F8F1E8]
-                    shadow-[0_18px_42px_rgba(58,38,26,0.32)]
-                    transition-colors
-                    duration-300
-                    hover:bg-[#2B1B12]
-                    md:mt-0
-                    md:w-auto
-                  "
-                >
-                  Cotizar mi proyecto
-                  <span className="ml-2" aria-hidden="true">
-                    →
-                  </span>
-                </a>
               </footer>
             </div>
           </div>
@@ -333,36 +293,160 @@ export default function FeaturesSection() {
   );
 }
 
-function FeatureCard({ feature }: { feature: Feature }) {
+type FeatureCardProps = {
+  feature: Feature;
+  isActive: boolean;
+  onToggle: () => void;
+};
+
+function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
   const styles = toneStyles[feature.tone];
 
   return (
-    <article
-      className={`
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={isActive}
+      aria-label={`${feature.title}. ${
+        isActive ? "Ocultar detalle" : "Ver detalle"
+      }`}
+      className="
+        group
         relative
-        min-h-[132px]
-        overflow-hidden
+        block
+        h-52
+        w-full
         rounded-[1.35rem]
-        border
-        p-4
-        transition-none
-        md:min-h-[154px]
-        md:p-5
-        lg:min-h-[158px]
-        xl:min-h-[166px]
-        ${styles.card}
-      `}
-      aria-label={feature.title}
+        text-left
+        outline-none
+        [perspective:1000px]
+        focus-visible:ring-2
+        focus-visible:ring-[#C49A6C]
+        focus-visible:ring-offset-2
+        focus-visible:ring-offset-[#F4E6D7]
+        md:h-56
+        lg:h-52
+        xl:h-56
+      "
     >
-      {/*
-        Bisel interno de la card.
-        Aporta profundidad sin hacer que la card parezca clickeable.
-      */}
+      <div
+        className={`
+          relative
+          h-full
+          w-full
+          rounded-[1.35rem]
+          transition-transform
+          duration-500
+          ease-out
+          [transform-style:preserve-3d]
+          ${isActive ? "[transform:rotateY(180deg)]" : ""}
+        `}
+      >
+        {/* Frente */}
+        <div
+          className={`
+            absolute
+            inset-0
+            overflow-hidden
+            rounded-[1.35rem]
+            border
+            p-5
+            [backface-visibility:hidden]
+            ${styles.card}
+          `}
+        >
+          <CardSurfaceDetails />
+
+          <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
+            <div
+              className={`
+                flex
+                h-20
+                w-20
+                items-center
+                justify-center
+                rounded-full
+                md:h-20
+                md:w-20
+                ${styles.badge}
+              `}
+              aria-hidden="true"
+            >
+              <Image
+                src={feature.icon}
+                alt=""
+                width={56}
+                height={56}
+                className="h-14 w-14 object-contain"
+              />
+            </div>
+
+            <h3
+              className={`mt-5 max-w-60 text-xl font-semibold leading-tight tracking-[-0.02em] ${styles.title}`}
+            >
+              {feature.title}
+            </h3>
+
+            <span
+              className={`mt-4 self-stretch text-right text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
+            >
+              Ver detalle
+            </span>
+          </div>
+        </div>
+
+        {/* Reverso */}
+        <div
+          className={`
+            absolute
+            inset-0
+            overflow-hidden
+            rounded-[1.35rem]
+            border
+            p-5
+            [backface-visibility:hidden]
+            [transform:rotateY(180deg)]
+            ${styles.card}
+            ${styles.back}
+          `}
+        >
+          <CardSurfaceDetails />
+
+          <div className="relative z-10 flex h-full flex-col justify-between">
+            <div>
+              <h3
+                className={`text-lg font-semibold leading-tight text-center tracking-[-0.02em] ${styles.title}`}
+              >
+                {feature.title}
+              </h3>
+
+              <p
+                className={`mt-4 text-sm leading-6 text-center ${styles.description}`}
+              >
+                {feature.description}
+              </p>
+            </div>
+
+            <span
+              className={`mt-5 text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
+            >
+              Tocar para volver
+            </span>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function CardSurfaceDetails() {
+  return (
+    <>
       <div
         className="
           pointer-events-none
           absolute
-          inset-[1px]
+          inset-px
           rounded-[1.28rem]
           border
           border-white/35
@@ -370,10 +454,6 @@ function FeatureCard({ feature }: { feature: Feature }) {
         aria-hidden="true"
       />
 
-      {/*
-        Highlight superior.
-        Simula una línea de luz sobre la tarjeta.
-      */}
       <div
         className="
           pointer-events-none
@@ -388,47 +468,6 @@ function FeatureCard({ feature }: { feature: Feature }) {
         "
         aria-hidden="true"
       />
-
-      <div className="relative z-10 flex gap-4 md:gap-5">
-        {/*
-          Medallón del ícono.
-          El PNG es decorativo; por eso el contenedor es aria-hidden
-          y el Image usa alt vacío.
-        */}
-        <div
-          className={`
-            flex
-            h-[52px]
-            w-[52px]
-            shrink-0
-            items-center
-            justify-center
-            rounded-full
-            md:h-[60px]
-            md:w-[60px]
-            ${styles.badge}
-          `}
-          aria-hidden="true"
-        >
-          <Image
-            src={feature.icon}
-            alt=""
-            width={48}
-            height={48}
-            className="h-[40px] w-[40px] object-contain md:h-[46px] md:w-[46px]"
-          />
-        </div>
-
-        <div className="min-w-0">
-          <h3 className="text-base font-semibold leading-snug tracking-[-0.02em] md:text-lg">
-            {feature.title}
-          </h3>
-
-          <p className={`mt-2 text-sm leading-6 ${styles.description}`}>
-            {feature.description}
-          </p>
-        </div>
-      </div>
-    </article>
+    </>
   );
 }
