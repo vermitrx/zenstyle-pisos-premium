@@ -94,13 +94,18 @@ function ProductSelector({
               key={product.id}
               type="button"
               onClick={() => onSelect(product.id)}
-              className={`group rounded-2xl border bg-white p-2 text-left transition duration-300 ${
+              aria-pressed={isSelected}
+              className={`group rounded-2xl border p-2 text-left transition-all duration-200 ease-out ${
                 isSelected
-                  ? "border-[#C8A45D] shadow-[0_16px_35px_rgba(31,35,40,0.16)]"
-                  : "border-neutral-200 shadow-sm hover:border-[#C8A45D]/70 hover:shadow-[0_14px_30px_rgba(31,35,40,0.12)]"
+                  ? "translate-y-0.5 scale-[0.98] border-[#C8A45D] bg-[#F7F1E6] shadow-[inset_0_3px_8px_rgba(31,35,40,0.18),0_4px_12px_rgba(31,35,40,0.10)] ring-2 ring-[#C8A45D]/35"
+                  : "translate-y-0 scale-100 border-neutral-200 bg-white shadow-sm hover:-translate-y-px hover:border-[#C8A45D]/70 hover:shadow-[0_14px_30px_rgba(31,35,40,0.12)]"
               }`}
             >
-              <div className="relative h-24 overflow-hidden rounded-xl bg-neutral-100 sm:h-28 md:h-32 lg:h-auto lg:aspect-4/3">
+              <div
+                className={`relative h-24 overflow-hidden rounded-xl bg-neutral-100 transition duration-200 sm:h-28 md:h-32 lg:h-auto lg:aspect-4/3 ${
+                  isSelected ? "brightness-95" : "group-hover:brightness-105"
+                }`}
+              >
                 <Image
                   src={product.thumbnail}
                   alt={product.name}

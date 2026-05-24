@@ -21,10 +21,10 @@ import { useState } from "react";
  * - Al activar otra card, la anterior se cierra automáticamente.
  *
  * Notas de mantenimiento:
- * - Esta sección es Client Component porque usa useState.
+ * - Esta sección ahora es Client Component porque usa useState.
  * - La sección sigue siendo autónoma y no depende de HeroCarousel.
  * - Los íconos son PNG transparentes y viven en /public/icons/features/.
- * - La tipografía debe venir desde variables/globales del proyecto.
+ * - La tipografía debe venir desde variables/globales del proyecto, no desde aquí.
  */
 
 type FeatureTone = "dark" | "light" | "taupe";
@@ -38,7 +38,7 @@ type Feature = {
 
 const features: Feature[] = [
   {
-    title: "Apariencia tipo madera",
+    title: "Apariencia tipo madera" /* premium */,
     description:
       "La calidez visual de la madera con acabados modernos, elegantes y fáciles de integrar a distintos estilos de interiorismo.",
     tone: "dark",
@@ -81,6 +81,21 @@ const features: Feature[] = [
   },
 ];
 
+/**
+ * toneStyles
+ * -----------------------------------------------------------------------------
+ * card:
+ *   Estilo base de la tarjeta.
+ *
+ * badge:
+ *   Contenedor circular del ícono.
+ *
+ * description:
+ *   Color del texto descriptivo en el reverso.
+ *
+ * back:
+ *   Fondo del reverso. Lo dejamos controlado por tono para mantener contraste.
+ */
 const toneStyles: Record<
   FeatureTone,
   {
@@ -139,7 +154,7 @@ export default function FeaturesSection() {
     >
       <div className="relative overflow-hidden bg-[#201711] py-10 lg:min-h-screen lg:pl-5">
         {/* Imagen mobile / tablet vertical */}
-        <div className="relative h-96 w-full md:h-128 lg:hidden">
+        <div className="relative h-96 w-full md:h-[32rem] lg:hidden">
           <Image
             src="/images/features/features-showroom-mobile.webp"
             alt="Estancia premium con piso SPC Zen Style"
@@ -149,7 +164,7 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-linear-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
         </div>
 
         {/* Imagen desktop / tablet horizontal */}
@@ -163,10 +178,10 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-linear-to-r from-[#201711]/15 via-transparent to-black/5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#201711]/15 via-transparent to-black/5" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-360 lg:min-h-screen">
+        <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
           <div
             className="
               relative
@@ -250,7 +265,7 @@ export default function FeaturesSection() {
 
               {/*
                 Grid de beneficios.
-                Las cards son interactivas.
+                Las cards ahora son interactivas.
                 Solo una card puede permanecer volteada a la vez.
               */}
               <div className="grid gap-5 md:grid-cols-2 md:gap-6 lg:gap-6 xl:gap-7">
@@ -304,7 +319,7 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
         rounded-[1.35rem]
         text-left
         outline-none
-        perspective-[1000px]
+        [perspective:1000px]
         focus-visible:ring-2
         focus-visible:ring-[#C49A6C]
         focus-visible:ring-offset-2
@@ -323,8 +338,8 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
           transition-transform
           duration-500
           ease-out
-          transform-3d
-          ${isActive ? "transform-[rotateY(180deg)]" : ""}
+          [transform-style:preserve-3d]
+          ${isActive ? "[transform:rotateY(180deg)]" : ""}
         `}
       >
         {/* Frente */}
@@ -336,7 +351,7 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
             rounded-[1.35rem]
             border
             p-5
-            backface-hidden
+            [backface-visibility:hidden]
             ${styles.card}
           `}
         >
@@ -389,8 +404,8 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
             rounded-[1.35rem]
             border
             p-5
-            backface-hidden
-            transform-[rotateY(180deg)]
+            [backface-visibility:hidden]
+            [transform:rotateY(180deg)]
             ${styles.card}
             ${styles.back}
           `}
@@ -400,13 +415,13 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
               <h3
-                className={`text-center text-lg font-semibold leading-tight tracking-[-0.02em] ${styles.title}`}
+                className={`text-lg font-semibold leading-tight text-center tracking-[-0.02em] ${styles.title}`}
               >
                 {feature.title}
               </h3>
 
               <p
-                className={`mt-4 text-center text-sm leading-6 ${styles.description}`}
+                className={`mt-4 text-sm leading-6 text-center ${styles.description}`}
               >
                 {feature.description}
               </p>
@@ -446,7 +461,7 @@ function CardSurfaceDetails() {
           inset-x-5
           top-0
           h-px
-          bg-linear-to-r
+          bg-gradient-to-r
           from-transparent
           via-white/50
           to-transparent
