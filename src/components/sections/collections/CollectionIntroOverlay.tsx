@@ -9,16 +9,16 @@
   - overlay lateral;
   - eyebrow;
   - título;
-  - descripción;
-  - botón “Ver ficha técnica”.
+  - descripción.
 
-  Este componente NO conoce:
-  - categorías;
-  - productos;
-  - carrusel;
-  - estado activo del catálogo.
+  IMPORTANTE
+  -----------------------------------------------------------------------------
+  Este componente ya NO contiene botones.
 
-  Solo responde a una prop visual: isVisible.
+  Motivo:
+  Los botones "Ver ficha técnica" y "Ver catálogo" ahora viven directamente
+  dentro de CollectionHero.tsx para compartir el mismo comportamiento visual:
+  aparecen en "intro" y "collapsed", desaparecen en "catalog".
 */
 
 type CollectionIntroOverlayProps = {
@@ -35,7 +35,7 @@ export default function CollectionIntroOverlay({
         -----------------------------------------------------------------------
         Su objetivo es dar legibilidad al texto sin cubrir toda la imagen.
 
-        Cuando isVisible es false, el overlay desaparece por opacidad.
+        Cuando isVisible es false, desaparece mediante opacidad.
       */}
       <div
         className={`absolute inset-y-0 left-0 w-7/12 transition duration-300 ease-out sm:w-3/5 lg:w-1/2 ${
@@ -50,12 +50,12 @@ export default function CollectionIntroOverlay({
       {/*
         BLOQUE EDITORIAL
         -----------------------------------------------------------------------
-        El texto y el botón se mueven juntos.
+        Contiene únicamente el mensaje de introducción.
 
         En salida:
-        - se desplazan hacia la izquierda con -translate-x-4;
-        - pierden opacidad;
-        - dejan de recibir eventos por pointer-events-none.
+        - se desplaza hacia la izquierda;
+        - pierde opacidad;
+        - deja de recibir eventos.
       */}
       <div
         className={`absolute inset-y-0 left-0 flex w-full max-w-xl flex-col justify-center px-6 transition duration-300 ease-out sm:px-10 lg:px-12 ${
@@ -80,13 +80,6 @@ export default function CollectionIntroOverlay({
           Explora nuestra selección de pisos SPC y Wall Panels de alta calidad,
           diseñados para inspirar y durar.
         </p>
-
-        <button
-          type="button"
-          className="mt-7 w-fit rounded-2xl bg-zinc-800 px-6 py-4 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-800 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50"
-        >
-          Ver ficha técnica
-        </button>
       </div>
     </>
   );

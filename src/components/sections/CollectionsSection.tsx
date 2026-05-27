@@ -10,7 +10,6 @@ import {
 } from "@/data/collections/products";
 
 import CollectionHero from "@/components/sections/collections/CollectionHero";
-import type { CollectionHeroMode } from "@/components/sections/collections/collectionHeroTypes";
 
 /*
   CollectionsSection.tsx
@@ -25,50 +24,54 @@ import type { CollectionHeroMode } from "@/components/sections/collections/colle
   - modo visual activo de la Hero;
   - handlers principales de interacción.
 
-  Este archivo NO debe concentrar todo el markup visual de la sección. Para
-  mantener orden, escalabilidad y mantenimiento, delega la construcción visual a
-  componentes hijos dentro de:
+  Este archivo NO debe resolver la composición visual completa.
+  Para mantener mantenimiento, lectura y escalabilidad, delega la UI a los
+  componentes modulares ubicados en:
 
   src/components/sections/collections/
-
-  ARQUITECTURA DE LA SECCIÓN
-  -----------------------------------------------------------------------------
-  products.ts
-  → CollectionsSection.tsx
-  → CollectionHero.tsx
-  → CollectionIntroOverlay.tsx
-  → CollectionCatalogPanel.tsx
-  → CollectionCategorySwitch.tsx
-  → CollectionProductList.tsx
-  → CatalogPicture.tsx
 
   PRINCIPIO FUNCIONAL
   -----------------------------------------------------------------------------
   CollectionsSection NO combina pisos + wall panels.
 
   La lógica correcta es:
-  categoría activa → producto activo → renders propios del producto.
+
+  categoría activa
+  → producto activo
+  → renders propios del producto
+  → imagen principal dinámica.
 
   La lógica de combinaciones tipo selectedFloor + selectedWallPanel pertenece a
   Marketplace, no a CollectionsSection.
 */
 
 /*
-  getFirstProductByCategory
+  CollectionHeroMode
   -----------------------------------------------------------------------------
-  Función auxiliar local.
+  Define los tres estados visuales posibles de la Hero.
 
-  Objetivo:
-  Cuando el usuario cambia de categoría, esta función obtiene el primer producto
-  disponible de la nueva categoría.
+  "intro":
+  - Se muestra el bloque editorial: texto + overlay.
+  - Se muestran los botones flotantes inferiores:
+    - Ver ficha técnica
+    - Ver catálogo
 
-  Esto evita inconsistencias como:
-  - activeCategoryId = "wallPanels"
-  - selectedProduct = producto de "floors"
+  "catalog":
+  - Se oculta el bloque editorial.
+  - Se ocultan los botones flotantes inferiores.
+  - Se muestra el dock inferior con switch + productos.
 
-  Se mantiene dentro de CollectionsSection porque forma parte de la lógica de
-  coordinación de la sección.
+  "collapsed":
+  - Se mantiene la imagen limpia.
+  - Se oculta el dock inferior.
+  - Se muestran nuevamente los botones flotantes inferiores.
+
+  Nota didáctica:
+  Usar un union type evita manejar varios booleanos simultáneos, lo que reduce
+  combinaciones inválidas de UI.
 */
+type CollectionHeroMode = "intro" | "catalog" | "collapsed";
+
 function getFirstProductByCategory(
   categoryId: CollectionCategory,
 ): CollectionProduct {
@@ -87,9 +90,9 @@ export default function CollectionsSection() {
   /*
     ESTADO FUNCIONAL: CATEGORÍA ACTIVA
     ---------------------------------------------------------------------------
-    Controla si el catálogo está mostrando:
-    - Pisos SPC
-    - Wall Panels
+    Controla qué grupo de productos está visible:
+    - "floors"
+    - "wallPanels"
   */
   const [activeCategoryId, setActiveCategoryId] =
     useState<CollectionCategory>("floors");
@@ -97,12 +100,7 @@ export default function CollectionsSection() {
   /*
     ESTADO FUNCIONAL: PRODUCTO ACTIVO
     ---------------------------------------------------------------------------
-    Controla qué producto está seleccionado.
-
-    Este producto alimenta:
-    - imagen principal de la Hero;
-    - estado selected del carrusel;
-    - futuro pdfUrl de ficha técnica.
+    Controla qué producto alimenta el render principal de la Hero image.
   */
   const [selectedProduct, setSelectedProduct] = useState<CollectionProduct>(
     () => getFirstProductByCategory("floors"),
@@ -111,27 +109,21 @@ export default function CollectionsSection() {
   /*
     ESTADO VISUAL: MODO DE LA HERO
     ---------------------------------------------------------------------------
-    Reemplaza la lógica anterior de isCatalogOpen.
+    Sustituye la lógica booleana anterior de isCatalogOpen.
 
-    Modos disponibles:
-    - "intro"
-    - "catalog"
-    - "collapsed"
-
-    El type se importa desde collectionHeroTypes.ts para que CollectionsSection
-    y CollectionHero compartan una misma definición sin crear dependencia
-    circular entre archivos.
+    Esto permite distinguir:
+    - estado editorial inicial;
+    - estado de catálogo abierto;
+    - estado colapsado con imagen limpia.
   */
   const [heroMode, setHeroMode] = useState<CollectionHeroMode>("intro");
 
   /*
     CATEGORÍA ACTIVA DERIVADA
     ---------------------------------------------------------------------------
-    A partir del id de categoría activa, obtenemos el objeto completo de la
-    categoría.
+    A partir del id activo, obtenemos el objeto completo de categoría.
 
-    useMemo evita recalcular la búsqueda en cada render, salvo cuando cambia
-    activeCategoryId.
+    useMemo evita recalcular esta búsqueda salvo cuando cambia activeCategoryId.
   */
   const activeCategory = useMemo(() => {
     const category = collectionCategories.find(
@@ -144,11 +136,11 @@ export default function CollectionsSection() {
   /*
     CAMBIO DE CATEGORÍA
     ---------------------------------------------------------------------------
-    Al cambiar de Pisos SPC a Wall Panels, o viceversa:
+    Al cambiar entre Pisos SPC y Wall Panels:
     1. Se actualiza la categoría activa.
-    2. Se selecciona automáticamente el primer producto de esa categoría.
+    2. Se selecciona el primer producto de la nueva categoría.
 
-    Esto conserva coherencia entre categoría, listado visible y render principal.
+    Esto mantiene coherencia entre categoría, carrusel y render principal.
   */
   function handleCategoryChange(categoryId: CollectionCategory) {
     setActiveCategoryId(categoryId);
@@ -158,10 +150,9 @@ export default function CollectionsSection() {
   /*
     CAMBIO DE PRODUCTO
     ---------------------------------------------------------------------------
-    Al seleccionar un producto del carrusel, se actualiza selectedProduct.
+    Al seleccionar un modelo, se actualiza selectedProduct.
 
-    Como selectedProduct se pasa a CollectionHero, el render principal cambia
-    automáticamente.
+    CollectionHero recibe selectedProduct y actualiza la imagen principal.
   */
   function handleProductSelect(product: CollectionProduct) {
     setSelectedProduct(product);
@@ -175,14 +166,14 @@ export default function CollectionsSection() {
       <div className="mx-auto w-full max-w-7xl">
         <div className="overflow-hidden rounded-3xl bg-stone-50 shadow-2xl ring-1 ring-stone-200">
           {/*
-            BARRA SUPERIOR
+            HEADER DE LA SECCIÓN
             -------------------------------------------------------------------
-            Este bloque es estructural de la sección, no de la Hero interactiva.
-
-            Aquí se conserva:
+            Este bloque contiene la identidad visual superior del card:
+            - logo blanco;
             - fondo grafito/zinc;
-            - logo horizontal blanco;
-            - texto Catálogo 2026.
+            - texto de catálogo.
+
+            No participa en la lógica interactiva de la Hero.
           */}
           <div className="flex items-center justify-between bg-zinc-800 px-16 py-4 text-white lg:px-10">
             <Image

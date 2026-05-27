@@ -10,13 +10,14 @@ import type {
   -----------------------------------------------------------------------------
   Pinta el switch entre categorías del catálogo.
 
-  Este componente no administra estado interno.
-  Recibe la categoría activa desde CollectionsSection y comunica cambios mediante
-  onCategoryChange.
+  Es un controlled component:
+  - No administra estado interno.
+  - Recibe activeCategoryId desde CollectionsSection.
+  - Ejecuta onCategoryChange cuando el usuario selecciona otra categoría.
 
   Ajuste visual:
-  Los botones del switch usan el mismo color zinc del header/footer para mantener
-  consistencia cromática dentro de la sección.
+  Los botones activos usan el mismo zinc institucional que header, footer y
+  botones principales.
 */
 
 type CategoryItem = {

@@ -4,8 +4,6 @@ import {
   type CollectionProduct,
 } from "@/data/collections/products";
 
-import type { ActiveCollectionCategory } from "@/components/sections/collections/collectionHeroTypes";
-
 import CollectionCategorySwitch from "@/components/sections/collections/CollectionCategorySwitch";
 import CollectionProductList from "@/components/sections/collections/CollectionProductList";
 
@@ -24,10 +22,7 @@ import CollectionProductList from "@/components/sections/collections/CollectionP
   - texto editorial;
   - descripción;
   - CTA;
-  - datos técnicos.
-
-  Su función es exclusivamente permitir navegación rápida entre categorías y
-  productos.
+  - ficha técnica.
 
   COMPORTAMIENTO
   -----------------------------------------------------------------------------
@@ -41,12 +36,22 @@ import CollectionProductList from "@/components/sections/collections/CollectionP
   - reduce escala;
   - pierde opacidad;
   - queda sin interacción mediante pointer-events-none.
+
+  onPanelPointerLeave:
+  - permite que CollectionHero cambie el estado a "collapsed" cuando el usuario
+    sale del dock inferior.
 */
+
+type ActiveCategory = {
+  id: CollectionCategory;
+  label: string;
+  products: CollectionProduct[];
+};
 
 type CollectionCatalogPanelProps = {
   isVisible: boolean;
   selectedProduct: CollectionProduct;
-  activeCategory: ActiveCollectionCategory;
+  activeCategory: ActiveCategory;
   activeCategoryId: CollectionCategory;
   onCategoryChange: (categoryId: CollectionCategory) => void;
   onProductSelect: (product: CollectionProduct) => void;
@@ -71,15 +76,6 @@ export default function CollectionCatalogPanel({
           : "pointer-events-none translate-y-4 scale-95 opacity-0"
       }`}
     >
-      {/*
-        CONTENEDOR GLASS DEL DOCK
-        -----------------------------------------------------------------------
-        Conserva los ajustes visuales actuales:
-        - bg-white/30 para un glass tenue;
-        - backdrop-blur-none para no lavar la imagen;
-        - ring-white/80 para borde sutil;
-        - shadow-2xl para separación visual.
-      */}
       <div className="mx-auto max-w-4xl rounded-3xl bg-white/30 px-5 py-4 shadow-2xl ring-1 ring-white/80 backdrop-blur-none">
         <div className="mx-auto max-w-sm">
           <CollectionCategorySwitch
