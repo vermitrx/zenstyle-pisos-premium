@@ -1,3 +1,26 @@
+/*
+  CollectionIntroOverlay.tsx
+  -----------------------------------------------------------------------------
+  ROL DEL MÓDULO
+  -----------------------------------------------------------------------------
+  Este componente pinta el estado editorial inicial de la Hero.
+
+  Incluye:
+  - overlay lateral;
+  - eyebrow;
+  - título;
+  - descripción;
+  - botón “Ver ficha técnica”.
+
+  Este componente NO conoce:
+  - categorías;
+  - productos;
+  - carrusel;
+  - estado activo del catálogo.
+
+  Solo responde a una prop visual: isVisible.
+*/
+
 type CollectionIntroOverlayProps = {
   isVisible: boolean;
 };
@@ -7,6 +30,13 @@ export default function CollectionIntroOverlay({
 }: CollectionIntroOverlayProps) {
   return (
     <>
+      {/*
+        OVERLAY LATERAL
+        -----------------------------------------------------------------------
+        Su objetivo es dar legibilidad al texto sin cubrir toda la imagen.
+
+        Cuando isVisible es false, el overlay desaparece por opacidad.
+      */}
       <div
         className={`absolute inset-y-0 left-0 w-7/12 transition duration-300 ease-out sm:w-3/5 lg:w-1/2 ${
           isVisible ? "opacity-100" : "pointer-events-none opacity-0"
@@ -17,6 +47,16 @@ export default function CollectionIntroOverlay({
         }}
       />
 
+      {/*
+        BLOQUE EDITORIAL
+        -----------------------------------------------------------------------
+        El texto y el botón se mueven juntos.
+
+        En salida:
+        - se desplazan hacia la izquierda con -translate-x-4;
+        - pierden opacidad;
+        - dejan de recibir eventos por pointer-events-none.
+      */}
       <div
         className={`absolute inset-y-0 left-0 flex w-full max-w-xl flex-col justify-center px-6 transition duration-300 ease-out sm:px-10 lg:px-12 ${
           isVisible
@@ -43,7 +83,7 @@ export default function CollectionIntroOverlay({
 
         <button
           type="button"
-          className="mt-7 w-fit rounded-2xl bg-stone-950 px-6 py-4 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-950 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50"
+          className="mt-7 w-fit rounded-2xl bg-zinc-800 px-6 py-4 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-zinc-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-800 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50"
         >
           Ver ficha técnica
         </button>

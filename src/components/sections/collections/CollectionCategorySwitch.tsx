@@ -3,6 +3,22 @@ import type {
   CollectionProduct,
 } from "@/data/collections/products";
 
+/*
+  CollectionCategorySwitch.tsx
+  -----------------------------------------------------------------------------
+  ROL DEL MÓDULO
+  -----------------------------------------------------------------------------
+  Pinta el switch entre categorías del catálogo.
+
+  Este componente no administra estado interno.
+  Recibe la categoría activa desde CollectionsSection y comunica cambios mediante
+  onCategoryChange.
+
+  Ajuste visual:
+  Los botones del switch usan el mismo color zinc del header/footer para mantener
+  consistencia cromática dentro de la sección.
+*/
+
 type CategoryItem = {
   id: CollectionCategory;
   label: string;
@@ -31,10 +47,10 @@ export default function CollectionCategorySwitch({
             type="button"
             onClick={() => onCategoryChange(category.id)}
             aria-pressed={isActive}
-            className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-950 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-800 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
               isActive
-                ? "bg-stone-950 text-white shadow-sm"
-                : "text-stone-600 ring-1 ring-stone-500 hover:bg-white hover:text-stone-950"
+                ? "bg-zinc-800 text-white shadow-sm"
+                : "text-zinc-800 ring-1 ring-zinc-800/40 hover:bg-white hover:text-zinc-900"
             }`}
           >
             {category.label}
