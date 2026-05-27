@@ -16,9 +16,10 @@
   Crear una estructura estable y escalable para alimentar CollectionsSection
   antes de conectar una base de datos real.
 
-  Objetivo futuro:
-  Cuando Zenstyle evolucione hacia una etapa dinámica, esta estructura podrá
-  migrarse a una base de datos, CMS, API o CRM sin rediseñar la UI completa.
+  Objetivo de esta versión:
+  Cada producto tiene valores distintos en descripción, specs y beneficios para
+  confirmar visualmente que la lógica de selección está actualizando todas las
+  partes de la UI correctamente.
 
   Decisión funcional importante para CollectionsSection:
   En esta sección NO habrá combinación piso + wall panel.
@@ -26,28 +27,23 @@
   La lógica será:
   Categoría activa → Producto activo → Renders del producto → Data técnica.
 
-  Esto significa que cada producto, sea piso SPC o wall panel, tiene sus propios
-  renders asociados. Al seleccionar un producto, cambian sus dos imágenes:
+  Cada producto, sea piso SPC o wall panel, tiene sus propios renders asociados:
   - sala;
   - recámara/comedor.
 
   NO se debe construir una lógica tipo:
   selectedFloor + selectedWallPanel → render combinado.
 
-  Esa lógica pertenece a otro tipo de sección, no a CollectionsSection.
+  Esa lógica pertenece a secciones tipo Marketplace, no a CollectionsSection.
 */
 
 /*
   Categorías internas del catálogo.
 
-  Usamos nombres técnicos en inglés porque serán más cómodos para código,
-  filtros, estados y futuras integraciones.
-
   - "floors" representa Pisos SPC.
   - "wallPanels" representa Wall Panels.
 
-  No usar aquí labels visibles como "Pisos SPC" o "Wall Panels".
-  Los labels visibles viven más abajo en collectionCategories.
+  Los labels visibles para la UI viven en collectionCategories.
 */
 export type CollectionCategory = "floors" | "wallPanels";
 
@@ -60,17 +56,7 @@ export type CollectionCategory = "floors" | "wallPanels";
   - AVIF será el formato principal.
   - WebP será el fallback.
 
-  Por eso NO guardamos una sola ruta como string.
-  Guardamos ambas rutas explícitamente.
-
-  Ejemplo:
-  thumbnail: {
-    avif: "/images/catalog/thumbs/floor-london-thumb.avif",
-    webp: "/images/catalog/thumbs/floor-london-thumb.webp",
-  }
-
-  Esto permite que después el componente renderice la imagen con <picture>,
-  <source type="image/avif" />, <source type="image/webp" /> e <img />.
+  Por eso guardamos ambas rutas explícitamente en lugar de una sola ruta string.
 */
 export type ProductImage = {
   avif: string;
@@ -80,25 +66,13 @@ export type ProductImage = {
 /*
   ProductRenders
   -----------------------------------------------------------------------------
-  Modelo para las imágenes principales asociadas a cada producto.
-
   Cada producto de CollectionsSection tendrá dos renders:
 
-  1. livingRoom
-     Imagen principal tipo sala. Será la imagen dominante del layout final.
+  - livingRoom: imagen principal, tipo sala.
+  - bedroom: imagen secundaria, tipo recámara/comedor.
 
-  2. bedroom
-     Segunda imagen de apoyo. Aunque en esta etapa pueda ser una escena tipo
-     comedor, se nombra como bedroom porque la intención final es que represente
-     la segunda habitación / recámara del producto aplicado.
-
-  Importante:
-  Estos renders pertenecen al producto activo. No son combinaciones entre pisos
+  Ambos renders pertenecen al producto activo. No son combinaciones entre pisos
   y wall panels.
-
-  Ejemplo:
-  selectedProduct.renders.livingRoom
-  selectedProduct.renders.bedroom
 */
 export type ProductRenders = {
   livingRoom: ProductImage;
@@ -108,21 +82,10 @@ export type ProductRenders = {
 /*
   BenefitIcon
   -----------------------------------------------------------------------------
-  Lista controlada de nombres técnicos para íconos de beneficios.
+  Lista controlada de nombres técnicos para íconos.
 
-  La intención es que la data NO importe componentes visuales.
-  En lugar de eso, cada beneficio declara un nombre técnico de ícono.
-
-  Después, en CollectionsSection o en un subcomponente, se podrá hacer un mapa:
-
-  const benefitIcons = {
-    water: DropletIcon,
-    installation: ToolsIcon,
-    resistance: ShieldIcon,
-    pets: PawIcon,
-  }
-
-  Así la data permanece limpia y desacoplada de la UI.
+  La data no debe importar componentes visuales. La UI será responsable de
+  mapear estos nombres a íconos reales cuando se integre esa fase.
 */
 export type BenefitIcon =
   | "water"
@@ -139,12 +102,8 @@ export type BenefitIcon =
   -----------------------------------------------------------------------------
   Cada especificación técnica se muestra como una dupla label/value.
 
-  Ejemplo visual:
-  Formato:       228 x 1524 mm
-  Espesor total: 5.5 mm
-
-  Mantener esta estructura simple facilita que después la UI pueda renderizar
-  las specs con .map() sin hardcodear filas manualmente.
+  Mantener esta estructura simple permite que CollectionsSection pinte las filas
+  con .map(), sin hardcodear cada parámetro dentro del componente.
 */
 export type CollectionSpec = {
   label: string;
@@ -156,13 +115,10 @@ export type CollectionSpec = {
   -----------------------------------------------------------------------------
   Cada beneficio tiene:
   - label: texto visible para el usuario.
-  - icon: nombre técnico del ícono que la UI deberá resolver.
+  - icon: nombre técnico del ícono.
 
-  Aunque de inicio varios productos compartan los mismos beneficios, los
-  beneficios viven dentro de cada producto para permitir variaciones futuras.
-
-  Ejemplo futuro:
-  Un piso puede tener "Uso comercial intenso" y otro no.
+  Aunque varios productos puedan compartir beneficios, se guardan dentro de cada
+  producto para permitir variaciones futuras sin rediseñar el modelo.
 */
 export type CollectionBenefit = {
   label: string;
@@ -174,7 +130,7 @@ export type CollectionBenefit = {
   -----------------------------------------------------------------------------
   Modelo principal de producto para CollectionsSection.
 
-  Esta estructura debe ser suficientemente rica para alimentar:
+  Esta estructura alimenta:
   - lista de productos;
   - thumbnails;
   - render principal de sala;
@@ -182,21 +138,8 @@ export type CollectionBenefit = {
   - panel de información;
   - especificaciones técnicas;
   - beneficios;
-  - modal de captación;
-  - ficha técnica PDF.
-
-  Campos:
-  - id: identificador único y estable para React, selección y tracking.
-  - name: nombre comercial visible.
-  - slug: versión amigable para rutas, archivos o futuras URLs.
-  - category: familia técnica del producto.
-  - collection: colección visible o familia comercial.
-  - thumbnail: imagen pequeña AVIF/WebP para selectores.
-  - renders: set de imágenes principales asociadas al producto.
-  - pdfUrl: ruta de la ficha técnica.
-  - description: copy breve para panel de producto.
-  - specs: especificaciones técnicas.
-  - benefits: beneficios propios del producto.
+  - modal de captación futuro;
+  - ficha técnica PDF futura.
 */
 export type CollectionProduct = {
   id: string;
@@ -216,12 +159,6 @@ export type CollectionProduct = {
   CollectionCategoryGroup
   -----------------------------------------------------------------------------
   Agrupa productos por categoría para facilitar el switch de la UI.
-
-  CollectionsSection podrá usar esta estructura así:
-  - pintar botones de categoría;
-  - encontrar la categoría activa;
-  - obtener los productos visibles;
-  - elegir un producto random al cargar o cambiar categoría.
 */
 export type CollectionCategoryGroup = {
   id: CollectionCategory;
@@ -232,19 +169,15 @@ export type CollectionCategoryGroup = {
 /*
   Rutas centrales de assets reutilizables.
   -----------------------------------------------------------------------------
-  Estas rutas NO pertenecen a CollectionsSection exclusivamente.
+  Estas rutas NO pertenecen solo a CollectionsSection.
 
-  Son assets de catálogo/producto y podrán ser usados por:
+  Son assets de catálogo/producto y podrán ser consumidos por:
   - CollectionsSection;
   - MarketPlaceSection;
   - MarketPlace2Section;
   - modales;
   - cards futuras;
   - futuras páginas de producto.
-
-  Regla del proyecto:
-  Si el asset representa un producto, vive en /catalog.
-  Si el asset representa una sección específica, vive en la carpeta de esa sección.
 */
 const catalogThumbsPath = "/images/catalog/thumbs";
 const catalogRendersPath = "/images/catalog/renders";
@@ -253,27 +186,15 @@ const techSpecsPath = "/pdfs/tech-specs";
 /*
   createProductImage
   -----------------------------------------------------------------------------
-  Helper pequeño para evitar repetir manualmente las rutas .avif y .webp.
+  Helper para evitar repetir manualmente rutas .avif y .webp.
 
   Recibe:
   - basePath: carpeta donde vive la imagen.
   - fileName: nombre base sin extensión.
 
   Devuelve:
-  {
-    avif: `${basePath}/${fileName}.avif`,
-    webp: `${basePath}/${fileName}.webp`,
-  }
-
-  Ventaja:
-  Si respetamos el mismo nombre base para AVIF y WebP, la data queda más limpia.
-
-  Ejemplo:
-  createProductImage(catalogThumbsPath, "floor-london-thumb")
-
-  genera:
-  /images/catalog/thumbs/floor-london-thumb.avif
-  /images/catalog/thumbs/floor-london-thumb.webp
+  - ruta AVIF;
+  - ruta WebP.
 */
 function createProductImage(basePath: string, fileName: string): ProductImage {
   return {
@@ -285,27 +206,11 @@ function createProductImage(basePath: string, fileName: string): ProductImage {
 /*
   createProductRenders
   -----------------------------------------------------------------------------
-  Helper para crear el set de dos renders asociados a un producto.
+  Helper para crear el set de dos renders asociados a cada producto.
 
-  Recibe:
-  - productFileBase: nombre base del producto sin sufijo de ambiente.
-
-  Genera automáticamente:
+  Naming esperado:
   - [productFileBase]-living-room.avif / .webp
   - [productFileBase]-bedroom.avif / .webp
-
-  Ejemplo:
-  createProductRenders("floor-london")
-
-  genera:
-  /images/catalog/renders/floor-london-living-room.avif
-  /images/catalog/renders/floor-london-living-room.webp
-  /images/catalog/renders/floor-london-bedroom.avif
-  /images/catalog/renders/floor-london-bedroom.webp
-
-  Nota de mantenimiento:
-  Si más adelante se agrega una tercera escena, por ejemplo "kitchen", este tipo
-  y este helper serán el punto correcto para ampliar la estructura.
 */
 function createProductRenders(productFileBase: string): ProductRenders {
   return {
@@ -318,90 +223,15 @@ function createProductRenders(productFileBase: string): ProductRenders {
 }
 
 /*
-  Specs placeholder para Pisos SPC.
-  -----------------------------------------------------------------------------
-  Estos valores son temporales.
-
-  Cuando se tengan las fichas técnicas reales, reemplazar los placeholders por
-  datos exactos de cada modelo.
-
-  Aunque hoy todos los pisos compartan specs, se asignan dentro de cada producto.
-  Si un modelo cambia en el futuro, puede recibir su propio array de specs sin
-  modificar la estructura del componente.
-*/
-const defaultFloorSpecs: CollectionSpec[] = [
-  { label: "Formato", value: "Placeholder" },
-  { label: "Espesor total", value: "Placeholder" },
-  { label: "Capa de uso", value: "Placeholder" },
-  { label: "Sistema", value: "Click Lock" },
-];
-
-/*
-  Beneficios placeholder para Pisos SPC.
-  -----------------------------------------------------------------------------
-  Se declaran como base inicial, pero cada producto conserva su propia propiedad
-  benefits para permitir variaciones futuras.
-*/
-const defaultFloorBenefits: CollectionBenefit[] = [
-  { label: "Resistente al agua", icon: "water" },
-  { label: "Fácil instalación", icon: "installation" },
-  { label: "Alta resistencia", icon: "resistance" },
-  { label: "Apto para mascotas", icon: "pets" },
-];
-
-/*
-  Specs placeholder para Wall Panels.
-  -----------------------------------------------------------------------------
-  Estos valores son temporales hasta tener los datos técnicos definitivos de
-  los tres modelos reales de wall panels.
-*/
-const defaultWallPanelSpecs: CollectionSpec[] = [
-  { label: "Formato", value: "Placeholder" },
-  { label: "Espesor", value: "Placeholder" },
-  { label: "Material", value: "Placeholder" },
-  { label: "Uso recomendado", value: "Interior" },
-];
-
-/*
-  Beneficios placeholder para Wall Panels.
-  -----------------------------------------------------------------------------
-  Igual que en pisos, se parte de beneficios comunes pero se mantienen dentro
-  de cada producto para futura personalización.
-*/
-const defaultWallPanelBenefits: CollectionBenefit[] = [
-  { label: "Diseño decorativo", icon: "design" },
-  { label: "Instalación rápida", icon: "installation" },
-  { label: "Bajo mantenimiento", icon: "maintenance" },
-  { label: "Acabado premium", icon: "premium" },
-];
-
-/*
   collectionFloors
   -----------------------------------------------------------------------------
   Catálogo inicial de Pisos SPC.
 
-  Modelos definidos para esta primera versión:
-  - Los Angeles
-  - Lisbon
-  - London
-  - Madrid
-  - San Francisco
-  - Vevey
-
-  Naming de assets:
-  - Thumb:           floor-[slug]-thumb.avif / .webp
-  - Render sala:    floor-[slug]-living-room.avif / .webp
-  - Render recámara: floor-[slug]-bedroom.avif / .webp
-  - PDF:             floor-[slug].pdf
-
-  Ejemplo para London:
-  public/images/catalog/thumbs/floor-london-thumb.avif
-  public/images/catalog/thumbs/floor-london-thumb.webp
-  public/images/catalog/renders/floor-london-living-room.avif
-  public/images/catalog/renders/floor-london-living-room.webp
-  public/images/catalog/renders/floor-london-bedroom.avif
-  public/images/catalog/renders/floor-london-bedroom.webp
-  public/pdfs/tech-specs/floor-london.pdf
+  En esta versión, cada producto tiene valores distintos para validar que:
+  - specs cambian por producto;
+  - beneficios cambian por producto;
+  - descripción cambia por producto;
+  - thumbnails y renders ya están correctamente vinculados por naming.
 */
 export const collectionFloors: CollectionProduct[] = [
   {
@@ -409,63 +239,111 @@ export const collectionFloors: CollectionProduct[] = [
     name: "Los Angeles",
     slug: "los-angeles",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Urban Warm",
     thumbnail: createProductImage(catalogThumbsPath, "floor-los-angeles-thumb"),
     renders: createProductRenders("floor-los-angeles"),
     pdfUrl: `${techSpecsPath}/floor-los-angeles.pdf`,
     description:
-      "Piso SPC de apariencia premium, diseñado para aportar calidez, resistencia y continuidad visual en espacios interiores.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de tono cálido y presencia contemporánea, diseñado para espacios interiores con carácter urbano y alto tránsito cotidiano.",
+    specs: [
+      { label: "Formato", value: "228 x 1524 mm" },
+      { label: "Espesor total", value: "5.5 mm" },
+      { label: "Capa de uso", value: "0.5 mm" },
+      { label: "Sistema de instalación", value: "Click Lock" },
+      { label: "Textura", value: "Madera cálida mate" },
+      { label: "Uso recomendado", value: "Residencial / Comercial ligero" },
+    ],
+    benefits: [
+      { label: "Resistente al agua", icon: "water" },
+      { label: "Instalación rápida", icon: "installation" },
+      { label: "Alta resistencia diaria", icon: "resistance" },
+      { label: "Apto para mascotas", icon: "pets" },
+    ],
   },
   {
     id: "floor-lisbon",
     name: "Lisbon",
     slug: "lisbon",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Natural Balance",
     thumbnail: createProductImage(catalogThumbsPath, "floor-lisbon-thumb"),
     renders: createProductRenders("floor-lisbon"),
     pdfUrl: `${techSpecsPath}/floor-lisbon.pdf`,
     description:
-      "Piso SPC con estética sobria y versátil, ideal para ambientes residenciales y comerciales con diseño contemporáneo.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de apariencia equilibrada y neutral, ideal para proyectos que buscan amplitud visual, sobriedad y fácil mantenimiento.",
+    specs: [
+      { label: "Formato", value: "228 x 1524 mm" },
+      { label: "Espesor total", value: "6.0 mm" },
+      { label: "Capa de uso", value: "0.5 mm" },
+      { label: "Sistema de instalación", value: "Uniclic" },
+      { label: "Textura", value: "Roble natural suave" },
+      { label: "Uso recomendado", value: "Residencial premium" },
+    ],
+    benefits: [
+      { label: "Limpieza sencilla", icon: "maintenance" },
+      { label: "Estabilidad dimensional", icon: "resistance" },
+      { label: "Acabado natural", icon: "premium" },
+      { label: "Instalación sin obra húmeda", icon: "installation" },
+    ],
   },
   {
     id: "floor-london",
     name: "London",
     slug: "london",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Classic Wood",
     thumbnail: createProductImage(catalogThumbsPath, "floor-london-thumb"),
     renders: createProductRenders("floor-london"),
     pdfUrl: `${techSpecsPath}/floor-london.pdf`,
     description:
-      "Piso SPC de tono natural, pensado para crear espacios cálidos, elegantes y de alto desempeño.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de tono madera clásico, pensado para interiores cálidos, elegantes y visualmente atemporales.",
+    specs: [
+      { label: "Formato", value: "180 x 1220 mm" },
+      { label: "Espesor total", value: "5.0 mm" },
+      { label: "Capa de uso", value: "0.3 mm" },
+      { label: "Sistema de instalación", value: "Click 2G" },
+      { label: "Textura", value: "Veta sincronizada" },
+      { label: "Uso recomendado", value: "Residencial intensivo" },
+    ],
+    benefits: [
+      { label: "Confort visual cálido", icon: "design" },
+      { label: "Resistente a humedad", icon: "water" },
+      { label: "Fácil reposición", icon: "maintenance" },
+      { label: "Compatible con mascotas", icon: "pets" },
+    ],
   },
   {
     id: "floor-madrid",
     name: "Madrid",
     slug: "madrid",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Soft Grey",
     thumbnail: createProductImage(catalogThumbsPath, "floor-madrid-thumb"),
     renders: createProductRenders("floor-madrid"),
     pdfUrl: `${techSpecsPath}/floor-madrid.pdf`,
     description:
-      "Piso SPC con presencia visual equilibrada, adecuado para proyectos que buscan durabilidad y diseño atemporal.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de tono gris sobrio, adecuado para espacios modernos que requieren resistencia, neutralidad y continuidad estética.",
+    specs: [
+      { label: "Formato", value: "228 x 1524 mm" },
+      { label: "Espesor total", value: "5.5 mm" },
+      { label: "Capa de uso", value: "0.55 mm" },
+      { label: "Sistema de instalación", value: "Drop Click" },
+      { label: "Textura", value: "Madera gris mate" },
+      { label: "Uso recomendado", value: "Residencial / Oficinas" },
+    ],
+    benefits: [
+      { label: "Alta resistencia al desgaste", icon: "resistance" },
+      { label: "Diseño neutro profesional", icon: "design" },
+      { label: "Bajo mantenimiento", icon: "maintenance" },
+      { label: "Apto para interiores", icon: "interior" },
+    ],
   },
   {
     id: "floor-san-francisco",
     name: "San Francisco",
     slug: "san-francisco",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Deep Oak",
     thumbnail: createProductImage(
       catalogThumbsPath,
       "floor-san-francisco-thumb",
@@ -473,23 +351,47 @@ export const collectionFloors: CollectionProduct[] = [
     renders: createProductRenders("floor-san-francisco"),
     pdfUrl: `${techSpecsPath}/floor-san-francisco.pdf`,
     description:
-      "Piso SPC de carácter moderno, desarrollado para interiores con una estética limpia, técnica y sofisticada.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de tono profundo y sofisticado, ideal para interiores con contraste, mobiliario claro y acentos premium.",
+    specs: [
+      { label: "Formato", value: "228 x 1524 mm" },
+      { label: "Espesor total", value: "6.5 mm" },
+      { label: "Capa de uso", value: "0.7 mm" },
+      { label: "Sistema de instalación", value: "Click Pro" },
+      { label: "Textura", value: "Roble oscuro cepillado" },
+      { label: "Uso recomendado", value: "Comercial moderado" },
+    ],
+    benefits: [
+      { label: "Presencia visual premium", icon: "premium" },
+      { label: "Mayor capa de uso", icon: "resistance" },
+      { label: "Superficie fácil de limpiar", icon: "maintenance" },
+      { label: "Instalación flotante", icon: "installation" },
+    ],
   },
   {
     id: "floor-vevey",
     name: "Vevey",
     slug: "vevey",
     category: "floors",
-    collection: "Colección SPC",
+    collection: "Colección SPC Alpine Neutral",
     thumbnail: createProductImage(catalogThumbsPath, "floor-vevey-thumb"),
     renders: createProductRenders("floor-vevey"),
     pdfUrl: `${techSpecsPath}/floor-vevey.pdf`,
     description:
-      "Piso SPC de acabado elegante, ideal para espacios que requieren resistencia, diseño y una sensación premium.",
-    specs: defaultFloorSpecs,
-    benefits: defaultFloorBenefits,
+      "Piso SPC de acabado claro y elegante, pensado para espacios luminosos que buscan una sensación limpia, amplia y sofisticada.",
+    specs: [
+      { label: "Formato", value: "230 x 1500 mm" },
+      { label: "Espesor total", value: "5.2 mm" },
+      { label: "Capa de uso", value: "0.4 mm" },
+      { label: "Sistema de instalación", value: "Click Lock Plus" },
+      { label: "Textura", value: "Madera clara satinada" },
+      { label: "Uso recomendado", value: "Residencial / Hospitality" },
+    ],
+    benefits: [
+      { label: "Apariencia luminosa", icon: "design" },
+      { label: "Resistente al agua", icon: "water" },
+      { label: "Acabado premium", icon: "premium" },
+      { label: "Apto para mascotas", icon: "pets" },
+    ],
   },
 ];
 
@@ -498,28 +400,10 @@ export const collectionFloors: CollectionProduct[] = [
   -----------------------------------------------------------------------------
   Catálogo inicial de Wall Panels.
 
-  En esta etapa existen tres modelos placeholder:
-  - Wall Panel 01
-  - Wall Panel 02
-  - Wall Panel 03
+  El naming sigue siendo genérico por decisión operativa. Cuando se definan los
+  nombres reales, se actualizarán id, slug, name, copy, specs, rutas y PDFs.
 
-  Cuando tengas los nombres comerciales reales, se deberán actualizar:
-  - id
-  - name
-  - slug
-  - collection
-  - thumbnail
-  - renders
-  - pdfUrl
-  - description
-  - specs
-  - benefits, si aplica
-
-  Naming temporal:
-  - wall-panel-01-thumb.avif / .webp
-  - wall-panel-01-living-room.avif / .webp
-  - wall-panel-01-bedroom.avif / .webp
-  - wall-panel-01.pdf
+  En esta versión, también tienen valores distintos para probar la lógica.
 */
 export const collectionWallPanels: CollectionProduct[] = [
   {
@@ -527,42 +411,78 @@ export const collectionWallPanels: CollectionProduct[] = [
     name: "Wall Panel 01",
     slug: "wall-panel-01",
     category: "wallPanels",
-    collection: "Colección Wall Panels",
+    collection: "Colección Wall Panels Linear",
     thumbnail: createProductImage(catalogThumbsPath, "wall-panel-01-thumb"),
     renders: createProductRenders("wall-panel-01"),
     pdfUrl: `${techSpecsPath}/wall-panel-01.pdf`,
     description:
-      "Wall panel decorativo para interiores, diseñado para elevar la presencia visual de muros principales y espacios de alto impacto.",
-    specs: defaultWallPanelSpecs,
-    benefits: defaultWallPanelBenefits,
+      "Wall panel decorativo de líneas verticales para crear muros acento con profundidad, ritmo visual y acabado cálido.",
+    specs: [
+      { label: "Formato", value: "160 x 2900 mm" },
+      { label: "Espesor", value: "22 mm" },
+      { label: "Material", value: "WPC decorativo" },
+      { label: "Sistema de instalación", value: "Adhesivo + fijación" },
+      { label: "Textura", value: "Listonado madera" },
+      { label: "Uso recomendado", value: "Interior residencial" },
+    ],
+    benefits: [
+      { label: "Diseño decorativo", icon: "design" },
+      { label: "Instalación rápida", icon: "installation" },
+      { label: "Bajo mantenimiento", icon: "maintenance" },
+      { label: "Acabado cálido", icon: "premium" },
+    ],
   },
   {
     id: "wall-panel-02",
     name: "Wall Panel 02",
     slug: "wall-panel-02",
     category: "wallPanels",
-    collection: "Colección Wall Panels",
+    collection: "Colección Wall Panels Stone",
     thumbnail: createProductImage(catalogThumbsPath, "wall-panel-02-thumb"),
     renders: createProductRenders("wall-panel-02"),
     pdfUrl: `${techSpecsPath}/wall-panel-02.pdf`,
     description:
-      "Wall panel de acabado premium, ideal para generar muros acento en salas, recepciones, recámaras o espacios comerciales.",
-    specs: defaultWallPanelSpecs,
-    benefits: defaultWallPanelBenefits,
+      "Wall panel de apariencia pétrea para espacios interiores que requieren una presencia elegante, sobria y arquitectónica.",
+    specs: [
+      { label: "Formato", value: "1220 x 2440 mm" },
+      { label: "Espesor", value: "8 mm" },
+      { label: "Material", value: "PVC / compuesto decorativo" },
+      { label: "Sistema de instalación", value: "Adhesivo directo" },
+      { label: "Textura", value: "Piedra mate" },
+      { label: "Uso recomendado", value: "Muros acento interiores" },
+    ],
+    benefits: [
+      { label: "Acabado tipo piedra", icon: "premium" },
+      { label: "Fácil limpieza", icon: "maintenance" },
+      { label: "Apto para interiores", icon: "interior" },
+      { label: "Impacto visual inmediato", icon: "design" },
+    ],
   },
   {
     id: "wall-panel-03",
     name: "Wall Panel 03",
     slug: "wall-panel-03",
     category: "wallPanels",
-    collection: "Colección Wall Panels",
+    collection: "Colección Wall Panels Metallic",
     thumbnail: createProductImage(catalogThumbsPath, "wall-panel-03-thumb"),
     renders: createProductRenders("wall-panel-03"),
     pdfUrl: `${techSpecsPath}/wall-panel-03.pdf`,
     description:
-      "Wall panel para interiores con enfoque decorativo, pensado para aportar textura, profundidad y sofisticación al espacio.",
-    specs: defaultWallPanelSpecs,
-    benefits: defaultWallPanelBenefits,
+      "Wall panel de acabado metálico decorativo para proyectos que buscan un punto focal sofisticado y contemporáneo.",
+    specs: [
+      { label: "Formato", value: "600 x 2800 mm" },
+      { label: "Espesor", value: "12 mm" },
+      { label: "Material", value: "Panel compuesto decorativo" },
+      { label: "Sistema de instalación", value: "Fijación oculta" },
+      { label: "Textura", value: "Metal satinado" },
+      { label: "Uso recomendado", value: "Recepciones / muros focales" },
+    ],
+    benefits: [
+      { label: "Look contemporáneo", icon: "design" },
+      { label: "Acabado premium", icon: "premium" },
+      { label: "Bajo mantenimiento", icon: "maintenance" },
+      { label: "Instalación limpia", icon: "installation" },
+    ],
   },
 ];
 
@@ -571,16 +491,8 @@ export const collectionWallPanels: CollectionProduct[] = [
   -----------------------------------------------------------------------------
   Estructura lista para el switch de categoría en CollectionsSection.
 
-  Esta estructura permite que la UI no tenga que saber manualmente qué productos
-  pertenecen a cada categoría.
-
-  Uso esperado:
-  - activeCategoryId = "floors" | "wallPanels"
-  - activeCategory = collectionCategories.find(...)
-  - activeProducts = activeCategory.products
-
-  Al cambiar de categoría, la sección podrá seleccionar aleatoriamente uno de
-  los productos de activeProducts.
+  Este export es requerido por CollectionsSection.tsx.
+  No cambiar el nombre sin actualizar también el import del componente.
 */
 export const collectionCategories: CollectionCategoryGroup[] = [
   {
@@ -600,16 +512,8 @@ export const collectionCategories: CollectionCategoryGroup[] = [
   -----------------------------------------------------------------------------
   Array plano con todos los productos.
 
-  Puede ser útil para:
-  - búsquedas globales;
-  - validaciones;
-  - generación de rutas futuras;
-  - sitemap futuro;
-  - lookup por id;
-  - integración con CRM o analytics.
-
-  CollectionsSection probablemente usará más collectionCategories, pero este
-  array plano deja preparada la data para necesidades futuras.
+  Útil para búsquedas, validaciones, generación futura de rutas, integración con
+  CRM, analytics o páginas individuales de producto.
 */
 export const collectionProducts: CollectionProduct[] = [
   ...collectionFloors,

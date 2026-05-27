@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 
 import {
   collectionCategories,
@@ -59,18 +58,13 @@ export default function CollectionsSection() {
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="overflow-hidden rounded-3xl bg-stone-50 shadow-2xl ring-1 ring-stone-200">
-          <div className="flex items-center justify-between bg-zinc-800 px-16 py-4 text-white lg:px-10">
-            <Image
-              src="/images/brand/logo-zenstyle-horizontal-white.svg"
-              alt="Zenstyle"
-              width={160}
-              height={40}
-              className="h-20 w-auto"
-              priority
-            />
+          <div className="flex items-center justify-between bg-stone-950 px-6 py-4 text-white lg:px-10">
+            <p className="text-lg font-semibold uppercase tracking-widest">
+              LOGO Zenstyle
+            </p>
 
-            <p className="hidden text-2xl font-semibold uppercase tracking-widest text-white/70 sm:block" >
-              Catálogo&nbsp;&nbsp;2026
+            <p className="hidden text-lg font-semibold uppercase tracking-widest text-white/70 sm:block">
+              Catálogo 2026
             </p>
           </div>
 
@@ -84,7 +78,7 @@ export default function CollectionsSection() {
             onProductSelect={handleProductSelect}
           />
 
-          <div className="bg-zinc-800 px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white/60">
+          <div className="bg-stone-950 px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white/60">
             Zenstyle&nbsp;&nbsp;|&nbsp;&nbsp;Elevamos tus espacios
           </div>
         </div>

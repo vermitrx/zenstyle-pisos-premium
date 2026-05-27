@@ -7,6 +7,7 @@ import SpacerSection from "@/components/sections/SpacerSection";
 import MarketPlaceSection from "@/components/sections/MarketPlaceSection";
 import MarketPlaceSection2 from "@/components/sections/MarketPlace2Section";
 import CollectionsSection from "@/components/sections/CollectionsSection";
+import Collections3Section from "@/components/sections/Collections3Section";
 import Collections2Section from "@/components/sections/Collections2Section";
 
 export default function Home() {
@@ -15,11 +16,15 @@ export default function Home() {
       {/*<HeroCarousel />
       <FeaturesSection />*/}
       {/* <Features2Section /> */}
-      <CollectionsSection />
-      <Collections2Section />
       <SpacerSection />
-      <MarketPlaceSection />
-      <MarketPlaceSection2 />
+      <CollectionsSection />
+      <SpacerSection />
+      {/*<Collections3Section />
+      <SpacerSection />
+      <Collections2Section />
+      <SpacerSection />*/}
+      {/*<MarketPlaceSection />
+      <MarketPlaceSection2 />*/}
     </main>
   );
 }
