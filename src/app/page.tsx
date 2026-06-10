@@ -13,18 +13,17 @@ import Collections2Section from "@/components/sections/Collections2Section";
 export default function Home() {
   return (
     <main className="overflow-x-hidden">
-      {/*<HeroCarousel />
-      <FeaturesSection />*/}
-      {/* <Features2Section /> */}
+      <HeroCarousel />
+      <FeaturesSection />
       <SpacerSection />
       <CollectionsSection />
       <SpacerSection />
-      {/*<Collections3Section />
+      <Collections3Section />
       <SpacerSection />
-      <Collections2Section />
+      {/*<Collections2Section />
       <SpacerSection />*/}
-      {/*<MarketPlaceSection />
-      <MarketPlaceSection2 />*/}
+      <MarketPlaceSection />
+      <MarketPlaceSection2 />
     </main>
   );
 }
