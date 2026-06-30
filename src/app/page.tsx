@@ -1,4 +1,4 @@
-import HeroCarousel from "@/components/sections/HeroCarousel";
+import HeroCarouselTeaser from "@/components/sections/HeroCarouselTeaser";
 import FeaturesSection from "@/components/sections/FeaturesSection";
 {
   /* import Features2Section from "@/components/sections/Features2Section"; */
@@ -13,7 +13,8 @@ import Collections2Section from "@/components/sections/Collections2Section";
 export default function Home() {
   return (
     <main className="overflow-x-hidden">
-      <HeroCarousel />
+      {/* <HeroCarousel />}
+      
       <FeaturesSection />
       <SpacerSection />
       <CollectionsSection />
@@ -22,6 +23,7 @@ export default function Home() {
       <SpacerSection />
       {/*<Collections2Section />
       <SpacerSection />*/}
+      <HeroCarouselTeaser />
       <MarketPlaceSection />
       <MarketPlaceSection2 />
     </main>

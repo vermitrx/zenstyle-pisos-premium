@@ -32,8 +32,11 @@ const HERO_IMAGES = [
     isLcp: true,
     sources: {
       mobile: {
+        png: "/images/hero/hero-01-sala-lcp-teaser-mobile.png",
+        /* 
         avif: "/images/hero/hero-01-sala-lcp-mobile.avif",
         webp: "/images/hero/hero-01-sala-lcp-mobile.webp",
+        */
       },
 
       /**
@@ -66,7 +69,7 @@ const HERO_IMAGES = [
     isLcp: false,
     sources: {
       mobile: {
-        avif: "/images/hero/-.avif",
+        avif: "/images/hero/hero-02-oficina-mobile.avif",
         webp: "/images/hero/hero-02-oficina-mobile.webp",
       },
 
@@ -95,12 +98,48 @@ const HERO_IMAGES = [
       // },
     },
   },
+  {
+    id: "hero-03",
+    alt: "Recámara principal con piso SPC ZenStyle",
+    isLcp: false,
+    sources: {
+      mobile: {
+        avif: "/images/hero/hero-03-recamara-ppal-mobile.avif",
+        webp: "/images/hero/hero-03-recamara-ppal-mobile.webp",
+      },
+
+      /**
+       * TABLET — futura activación.
+       * Activar cuando se genere/exporte la variante tablet No-LCP.
+       */
+      // tablet: {
+      //   avif: "/images/hero/hero-03-recamara-ppal-tablet.avif",
+      //   webp: "/images/hero/hero-03-recamara-ppal-tablet.webp",
+      // },
+
+      desktop: {
+        avif: "/images/hero/hero-03-recamara-ppal-desktop.avif",
+        webp: "/images/hero/hero-03-recamara-ppal-desktop.webp",
+      },
+
+      /**
+       * RETINA — futura activación.
+       * Activar cuando se decida servir imágenes de mayor resolución a pantallas
+       * grandes o de alta densidad.
+       */
+      // retina: {
+      //   avif: "/images/hero/hero-03-recamara-ppal-retina.avif",
+      //   webp: "/images/hero/hero-03-recamara-ppal-retina.webp",
+      // },
+    },
+  },
 ];
 
 type HeroImageSources = {
   mobile: {
-    avif: string;
-    webp: string;
+    png: string;            // temporal: PNG para teaser en mobile
+    avif?: string;        //quitar el '?' cuando se reactive AVIF
+    webp?: string;      //quitar el '?' cuando se reactive WebP
   };
 
   /**
