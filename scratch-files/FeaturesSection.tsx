@@ -11,7 +11,8 @@ import { useState } from "react";
  *
  * Objetivo:
  * Comunicar los beneficios principales de los pisos SPC de Zen Style mediante
- * una composición editorial premium: imagen showroom + panel curvo + cards.
+ * una composición editorial premium: imagen showroom + bloque de contenido curvo
+ * + cards interactivas.
  *
  * Lógica interactiva:
  * - Las cards funcionan como flip cards.
@@ -20,11 +21,11 @@ import { useState } from "react";
  * - Click/tap en la card activa: regresa al frente.
  * - Al activar otra card, la anterior se cierra automáticamente.
  *
- * Notas de mantenimiento:
- * - Esta sección ahora es Client Component porque usa useState.
- * - La sección sigue siendo autónoma y no depende de HeroCarousel.
- * - Los íconos son PNG transparentes y viven en /public/icons/features/.
- * - La tipografía debe venir desde variables/globales del proyecto, no desde aquí.
+ * Ajuste actual:
+ * - En desktop, el alto queda contenido en el viewport con lg:h-dvh.
+ * - Se agrega aire superior/inferior en lg con lg:py-1.5.
+ * - Se reduce el margen izquierdo en lg con lg:pl-1.5.
+ * - Se elimina el centrado max-w en desktop para evitar margen negro excesivo.
  */
 
 type FeatureTone = "dark" | "light" | "taupe";
@@ -38,7 +39,7 @@ type Feature = {
 
 const features: Feature[] = [
   {
-    title: "Apariencia tipo madera" /* premium */,
+    title: "Apariencia tipo madera",
     description:
       "La calidez visual de la madera con acabados modernos, elegantes y fáciles de integrar a distintos estilos de interiorismo.",
     tone: "dark",
@@ -81,21 +82,6 @@ const features: Feature[] = [
   },
 ];
 
-/**
- * toneStyles
- * -----------------------------------------------------------------------------
- * card:
- *   Estilo base de la tarjeta.
- *
- * badge:
- *   Contenedor circular del ícono.
- *
- * description:
- *   Color del texto descriptivo en el reverso.
- *
- * back:
- *   Fondo del reverso. Lo dejamos controlado por tono para mantener contraste.
- */
 const toneStyles: Record<
   FeatureTone,
   {
@@ -152,9 +138,9 @@ export default function FeaturesSection() {
       id="beneficios"
       className="relative overflow-hidden bg-white text-[#2E2118]"
     >
-      <div className="relative overflow-hidden bg-[#201711] py-10 lg:min-h-screen lg:pl-5">
+      <div className="relative overflow-hidden bg-[#201711] py-5 lg:h-dvh lg:py-1.5 lg:pl-1.5">
         {/* Imagen mobile / tablet vertical */}
-        <div className="relative h-96 w-full md:h-[32rem] lg:hidden">
+        <div className="relative h-96 w-full md:h-128 lg:hidden">
           <Image
             src="/images/features/features-showroom-mobile.webp"
             alt="Estancia premium con piso SPC Zen Style"
@@ -164,7 +150,7 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/5 via-black/0 to-[#F4E6D7]" />
         </div>
 
         {/* Imagen desktop / tablet horizontal */}
@@ -178,10 +164,10 @@ export default function FeaturesSection() {
             className="object-cover object-center"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-r from-[#201711]/15 via-transparent to-black/5" />
+          <div className="absolute inset-0 bg-linear-to-r from-[#201711]/15 via-transparent to-black/5" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-[1440px] lg:min-h-screen">
+        <div className="relative z-10 w-full lg:h-full">
           <div
             className="
               relative
@@ -221,7 +207,7 @@ export default function FeaturesSection() {
               lg:mx-0
               lg:mt-0
               lg:flex
-              lg:min-h-screen
+              lg:h-full
               lg:w-[63%]
               lg:items-center
               lg:rounded-none
@@ -229,8 +215,8 @@ export default function FeaturesSection() {
               lg:border-y-0
               lg:border-l-0
               lg:border-r
-              lg:px-14
-              lg:py-16
+              lg:px-12
+              lg:py-7
               lg:shadow-[34px_0_80px_rgba(38,25,17,0.34)]
               lg:before:inset-3
               lg:before:rounded-none
@@ -241,34 +227,30 @@ export default function FeaturesSection() {
               lg:after:rounded-r-[5.15rem]
               lg:after:border-[#B99D80]/32
               xl:w-[61%]
-              xl:px-16
+              xl:px-14
+              2xl:px-16
             "
           >
             <div className="relative z-10 mx-auto w-full max-w-3xl lg:mx-0 lg:max-w-none">
-              <header className="mb-8 md:mb-10 lg:mb-9">
-                <div className="mb-4 flex items-center gap-4">
+              <header className="mb-6 md:mb-8 lg:mb-5 xl:mb-6">
+                <div className="mb-3 flex items-center gap-4">
                   <span className="text-xs font-semibold uppercase tracking-[0.36em] text-[#7A5638]">
                     Beneficios SPC
                   </span>
                   <span className="h-px w-12 bg-[#B99D80]" />
                 </div>
 
-                <h2 className="max-w-2xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-[#2E2118] md:text-5xl lg:text-[4.4rem] lg:leading-[0.96] xl:text-[4.85rem]">
+                <h2 className="max-w-2xl text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-[#2E2118] md:text-5xl lg:text-6xl lg:leading-[0.96] xl:text-7xl">
                   Diseño premium para la vida real
                 </h2>
 
-                <p className="mt-5 max-w-xl text-base leading-7 text-[#6A584A] md:text-lg lg:mt-6 lg:max-w-2xl">
+                <p className="mt-4 max-w-xl text-sm leading-6 text-[#6A584A] md:text-base md:leading-7 lg:max-w-2xl">
                   La apariencia cálida de la madera, con la resistencia y
                   practicidad que exigen los espacios modernos.
                 </p>
               </header>
 
-              {/*
-                Grid de beneficios.
-                Las cards ahora son interactivas.
-                Solo una card puede permanecer volteada a la vez.
-              */}
-              <div className="grid gap-5 md:grid-cols-2 md:gap-6 lg:gap-6 xl:gap-7">
+              <div className="grid gap-4 md:grid-cols-2 md:gap-5 lg:gap-4 xl:gap-5">
                 {features.map((feature, index) => (
                   <FeatureCard
                     key={feature.title}
@@ -279,8 +261,8 @@ export default function FeaturesSection() {
                 ))}
               </div>
 
-              <footer className="mt-5 border-t border-[#B99D80]/55 pt-4 md:mt-6 lg:mt-6">
-                <p className="max-w-none text-sm leading-6 text-[#5F4C3D] md:text-base lg:max-w-4xl">
+              <footer className="mt-4 border-t border-[#B99D80]/55 pt-3 md:mt-5 lg:mt-4">
+                <p className="max-w-none text-sm leading-6 text-[#5F4C3D] lg:max-w-5xl">
                   Una solución pensada para quienes buscan renovar con estilo,
                   funcionalidad y confianza.
                 </p>
@@ -319,14 +301,15 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
         rounded-[1.35rem]
         text-left
         outline-none
-        [perspective:1000px]
+        perspective-[1000px]
         focus-visible:ring-2
         focus-visible:ring-[#C49A6C]
         focus-visible:ring-offset-2
         focus-visible:ring-offset-[#F4E6D7]
         md:h-56
-        lg:h-52
-        xl:h-56
+        lg:h-40
+        xl:h-44
+        2xl:h-48
       "
     >
       <div
@@ -338,8 +321,8 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
           transition-transform
           duration-500
           ease-out
-          [transform-style:preserve-3d]
-          ${isActive ? "[transform:rotateY(180deg)]" : ""}
+          transform-3d
+          ${isActive ? "transform-[rotateY(180deg)]" : ""}
         `}
       >
         {/* Frente */}
@@ -350,8 +333,8 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
             overflow-hidden
             rounded-[1.35rem]
             border
-            p-5
-            [backface-visibility:hidden]
+            p-4
+            backface-hidden
             ${styles.card}
           `}
         >
@@ -361,13 +344,17 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
             <div
               className={`
                 flex
-                h-20
-                w-20
+                h-16
+                w-16
                 items-center
                 justify-center
                 rounded-full
-                md:h-20
-                md:w-20
+                md:h-18
+                md:w-18
+                lg:h-16
+                lg:w-16
+                xl:h-18
+                xl:w-18
                 ${styles.badge}
               `}
               aria-hidden="true"
@@ -375,20 +362,20 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
               <Image
                 src={feature.icon}
                 alt=""
-                width={56}
-                height={56}
-                className="h-14 w-14 object-contain"
+                width={48}
+                height={48}
+                className="h-11 w-11 object-contain md:h-12 md:w-12 lg:h-11 lg:w-11 xl:h-12 xl:w-12"
               />
             </div>
 
             <h3
-              className={`mt-5 max-w-60 text-xl font-semibold leading-tight tracking-[-0.02em] ${styles.title}`}
+              className={`mt-4 max-w-60 text-lg font-semibold leading-tight tracking-[-0.02em] md:text-xl lg:mt-3 lg:text-lg xl:text-xl ${styles.title}`}
             >
               {feature.title}
             </h3>
 
             <span
-              className={`mt-4 self-stretch text-right text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
+              className={`mt-3 self-stretch text-right text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
             >
               Ver detalle
             </span>
@@ -403,9 +390,9 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
             overflow-hidden
             rounded-[1.35rem]
             border
-            p-5
-            [backface-visibility:hidden]
-            [transform:rotateY(180deg)]
+            p-4
+            backface-hidden
+            transform-[rotateY(180deg)]
             ${styles.card}
             ${styles.back}
           `}
@@ -415,20 +402,20 @@ function FeatureCard({ feature, isActive, onToggle }: FeatureCardProps) {
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
               <h3
-                className={`text-lg font-semibold leading-tight text-center tracking-[-0.02em] ${styles.title}`}
+                className={`text-center text-base font-semibold leading-tight tracking-[-0.02em] md:text-lg lg:text-base xl:text-lg ${styles.title}`}
               >
                 {feature.title}
               </h3>
 
               <p
-                className={`mt-4 text-sm leading-6 text-center ${styles.description}`}
+                className={`mt-3 text-center text-sm leading-6 lg:mt-2 lg:leading-5 xl:leading-6 ${styles.description}`}
               >
                 {feature.description}
               </p>
             </div>
 
             <span
-              className={`mt-5 text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
+              className={`mt-3 text-xs font-semibold uppercase tracking-[0.18em] ${styles.hint}`}
             >
               Tocar para volver
             </span>
@@ -461,7 +448,7 @@ function CardSurfaceDetails() {
           inset-x-5
           top-0
           h-px
-          bg-gradient-to-r
+          bg-linear-to-r
           from-transparent
           via-white/50
           to-transparent
